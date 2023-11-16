@@ -114,7 +114,6 @@ export default function User() {
       >
         <Typography variant="h2">유저 포스트</Typography>
 
-        <Typography variant="h1">및부분 스타일만 있어요!</Typography>
         <StyledPagination />
         <StickyHeadTable columns={columns} rows={rows} />
       </StyledContainerOne>
