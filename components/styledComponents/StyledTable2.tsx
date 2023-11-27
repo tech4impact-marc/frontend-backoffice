@@ -1,6 +1,8 @@
 import {
-  Button,
-  Paper,
+  Question,
+  ReportTypeVersionsResponseDto,
+} from "@/pages/reports/types/[animal]";
+import {
   Table,
   TableBody,
   TableCell,
@@ -9,23 +11,16 @@ import {
   TableRow,
 } from "@mui/material";
 import { useRouter } from "next/router";
-import React from "react";
+import React, { useState } from "react";
 
-function createData(
-  versionNumber: number,
-  createdDateTime: string,
-  modifiedDateTime: string,
-  published: boolean
-) {
-  return { versionNumber, createdDateTime, modifiedDateTime, published };
-}
-
-const data = [createData(1, "hi", "hi", false)];
-
-export default function BasicTable() {
-  const [rows, setRows] = React.useState(data);
+export const BasicTable = ({
+  reportTypeVersion,
+}: {
+  reportTypeVersion: ReportTypeVersionsResponseDto;
+}) => {
+  const [rows, setRows] = useState(reportTypeVersion.contents);
   const router = useRouter();
-  const { pathname } = router;
+  const { pathname, query } = router;
   return (
     <TableContainer>
       <Table aria-label="simple table">
@@ -34,6 +29,7 @@ export default function BasicTable() {
             <TableCell width={"20%"}>리포트 버전</TableCell>
             <TableCell width={"20%"}>생성일</TableCell>
             <TableCell width={"20%"}>최종 수정일</TableCell>
+            <TableCell width={"20%"}>배포 날짜</TableCell>
             <TableCell width={"20%"}>배포 상태</TableCell>
           </TableRow>
         </TableHead>
@@ -43,14 +39,26 @@ export default function BasicTable() {
               key={row.versionNumber}
               sx={{ cursor: "pointer" }}
               onClick={() => {
-                router.push(`${pathname}/${row.versionNumber}`);
+                router.push(
+                  `/reports/types/${query.animal}/versions/${row.id}`
+                );
               }}
             >
               <TableCell component="th" scope="row">
                 {row.versionNumber}
               </TableCell>
-              <TableCell>{row.createdDateTime}</TableCell>
-              <TableCell>{row.modifiedDateTime}</TableCell>
+              <TableCell>
+                {row.createdDateTime.toString().slice(0, 19).replace("T", " ")}
+              </TableCell>
+              <TableCell>
+                {row.modifiedDateTime.toString().slice(0, 19).replace("T", " ")}
+              </TableCell>
+              <TableCell>
+                {row.publishedDateTime
+                  ?.toString()
+                  .slice(0, 19)
+                  .replace("T", " ")}
+              </TableCell>
               <TableCell align="center">
                 <div
                   style={{
@@ -72,4 +80,4 @@ export default function BasicTable() {
       </Table>
     </TableContainer>
   );
-}
+};

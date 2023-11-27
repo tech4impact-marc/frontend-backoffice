@@ -30,7 +30,7 @@ const NewReportOverlay = ({
   const router = useRouter();
   const { pathname } = router;
 
-  const handleNew = () => {
+  const handleNew = async () => {
     const initData = {
       label: newAnimal,
       subject: newAnimal,
@@ -39,25 +39,64 @@ const NewReportOverlay = ({
       description: `${newAnimal} 서포터즈로 참여하신 여러분께 감사드립니다.\n 여러분의 관찰 기록을 바탕으로 제주 ${newAnimal}의 분포 및 생태를 파악하고, 보전자료로 활용하고자 합니다.`,
       memo: ``,
     };
-    axios
-      .post(
+    const initVersionData = {
+      ...initData,
+      questions: [
+        {
+          questionOrder: 1,
+          title: "사진을 첨부해주세요",
+          description: "발견하신 바다 사진만 있어도 괜찮아요",
+          type: "FILE",
+          required: true,
+          isMain: true,
+        },
+        {
+          questionOrder: 2,
+          title: `언제 ${newAnimal}를 보셨나요?`,
+          description:
+            "이미 작성되어 있다면, 업로드해주신 사진을 바탕으로 작성되었어요",
+          type: "DATETIME",
+          required: true,
+          isMain: true,
+        },
+        {
+          questionOrder: 3,
+          title: `어디서 ${newAnimal}를 보셨나요?`,
+          description:
+            "이미 작성되어 있다면, 업로드해주신 사진을 바탕으로 작성되었어요",
+          type: "LOCATION",
+          required: true,
+          isMain: true,
+        },
+      ],
+    };
+    try {
+      let reportTypeId: number;
+      const firstResponse = await axios.post(
         `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/types`,
         initData
-      )
-      .then((response) => {
-        if (response.status == 200) {
-          console.log(response);
+      );
+      if (firstResponse.status === 200) {
+        reportTypeId = firstResponse.data.id;
+
+        const secondResponse = await axios.post(
+          `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/types/${reportTypeId}/versions`,
+          initVersionData
+        );
+
+        if (secondResponse.status === 200) {
           alert("설문이 추가되었습니다");
-          router.push(`/${pathname}/${response.data.id}`);
+          setOpenBackdrop(false);
+          router.push(`${pathname}/${reportTypeId}`);
         } else {
-          console.log(response);
-          alert("오류가 있었습니다");
+          console.error("버전 생성에 에러가 있었습니다:", secondResponse);
         }
-      })
-      .catch((err) => {
-        console.log(err.message);
-        alert("오류가 있었습니다");
-      });
+      } else {
+        console.error("설문 생성에 에러가 있었습니다:", firstResponse);
+      }
+    } catch (error) {
+      console.error("오류가 있었습니다:", error);
+    }
   };
 
   return (

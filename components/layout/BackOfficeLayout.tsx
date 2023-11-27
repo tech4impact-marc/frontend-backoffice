@@ -1,4 +1,4 @@
-import { Button, Typography, styled } from "@mui/material";
+import { Button, ButtonTypeMap, Typography, styled } from "@mui/material";
 import { useRouter } from "next/router";
 import React from "react";
 
@@ -20,11 +20,15 @@ export const StyledButton = ({
   children,
   sx,
   disabled,
+  color,
+  name,
 }: {
   onClick: any;
   children: React.ReactNode;
   sx?: React.CSSProperties;
   disabled?: boolean;
+  color?: ButtonTypeMap["props"]["color"];
+  name?: string;
 }) => {
   return (
     <Button
@@ -36,6 +40,8 @@ export const StyledButton = ({
       }}
       onClick={onClick}
       disabled={disabled}
+      color={color ? color : "primary"}
+      name={name}
       disableElevation
     >
       {children}

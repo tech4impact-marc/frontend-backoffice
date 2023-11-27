@@ -12,9 +12,10 @@ import BackOfficeLayout, {
 import {
   StyledContainerOne,
   StyledContainerThree,
+  StyledDivHeader,
 } from "@/components/styledComponents/StyledContainer";
 import Image from "next/image";
-import BasicTable from "@/components/styledComponents/StyledTable2";
+import { BasicTable } from "@/components/styledComponents/StyledTable2";
 import { GetServerSideProps } from "next";
 
 export interface ReportTypeSimpleResponseDto {
@@ -23,10 +24,28 @@ export interface ReportTypeSimpleResponseDto {
   description: string;
 }
 
+export interface ReportTypeVersionSimpleResponseDto {
+  id: number;
+  versionNumber: number;
+  published: boolean;
+  publishedDateTime: Date;
+  createdDateTime: Date;
+  modifiedDateTime: Date;
+  questions: Question[];
+}
+
+export interface ReportTypeVersionsResponseDto {
+  isEmpty: boolean;
+  numberOfElements: number;
+  contents: ReportTypeVersionSimpleResponseDto[];
+}
+
 export interface Question {
   id: number;
-  questionNumber: number;
+  questionOrder: number;
   title: string;
+  description: string;
+  modifiedDateTime: Date;
   type: string;
   required: boolean;
   isMain: boolean;
@@ -34,66 +53,30 @@ export interface Question {
 }
 
 export interface Option {
-  id: number;
-  answerNumber: number;
+  answerOrder: number;
   value: string;
 }
 
 const BackOfficeForm = ({
-  responseType,
+  reportType,
+  reportTypeVersion,
 }: {
-  responseType: ReportTypeSimpleResponseDto;
+  reportType: ReportTypeSimpleResponseDto;
+  reportTypeVersion: ReportTypeVersionsResponseDto;
 }) => {
   const router = useRouter();
   const selectedAnimal = useMemo(
     () => parseInt(router.query.animal as string),
     [router.query.animal]
   );
-  const [responseType, setResponseType] = useState<ReportTypeSimpleResponseDto>(
-    {
-      title: "",
-      subtitle: "",
-      description: "",
-    }
-  );
+  const [localResponseType, setLocalResponseType] =
+    useState<ReportTypeSimpleResponseDto>(reportType);
   const [updates, setUpdates] = useState<number>(0);
-  console.log(tmp);
-
-  useEffect(() => {
-    if (!selectedAnimal) {
-      return;
-    }
-
-    axios
-      .get(
-        `${process.env.NEXT_PUBLIC_IP_ADDRESS}/reports/types/${selectedAnimal}` // admin용은 없어...
-      )
-      .then((response) => {
-        setResponseType({
-          title: response.data.title,
-          subtitle: response.data.subtitle,
-          description: response.data.description,
-        });
-      })
-      .catch((err) => {
-        console.log(err.message);
-      });
-
-    axios
-      .get(
-        `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/types/${selectedAnimal}/versions` // admin용은 없어...
-      )
-      .then((response) => {
-        console.log(response);
-      })
-      .catch((err) => {
-        console.log(err.message);
-      });
-  }, [selectedAnimal, updates]);
+  console.log(reportTypeVersion);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setResponseType((prevState) => {
+    setLocalResponseType((prevState) => {
       return {
         ...prevState,
         [name as keyof ReportTypeSimpleResponseDto]: value,
@@ -106,7 +89,7 @@ const BackOfficeForm = ({
     axios
       .patch(
         `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/types/${selectedAnimal}`,
-        responseType
+        localResponseType
       )
       .then((response) => {
         if (response.status == 200) {
@@ -126,7 +109,7 @@ const BackOfficeForm = ({
 
   return (
     <React.Fragment>
-      {responseType && (
+      {localResponseType && (
         <React.Fragment>
           <StyledContainerOne
             style={{
@@ -136,9 +119,7 @@ const BackOfficeForm = ({
               justifyContent: "start",
             }}
           >
-            <div
-              style={{ width: "100%", display: "flex", alignItems: "center" }}
-            >
+            <StyledDivHeader>
               <Typography variant="h2">리포트 정보</Typography>
               <StyledButton
                 onClick={handleSubmit}
@@ -147,7 +128,7 @@ const BackOfficeForm = ({
               >
                 변경사항 저장하기
               </StyledButton>
-            </div>
+            </StyledDivHeader>
 
             <StyledContainerThree style={{ width: "100%", margin: "0" }}>
               <Typography variant="body1">아이콘</Typography>
@@ -178,7 +159,7 @@ const BackOfficeForm = ({
                 <TextField
                   variant="standard"
                   name={"title"}
-                  value={responseType.title}
+                  value={localResponseType.title}
                   onChange={handleChange}
                 />
               </StyledContainerThree>
@@ -187,7 +168,7 @@ const BackOfficeForm = ({
                 <TextField
                   variant="standard"
                   name={"subtitle"}
-                  value={responseType.subtitle}
+                  value={localResponseType.subtitle}
                   onChange={handleChange}
                 />
               </StyledContainerThree>
@@ -196,7 +177,7 @@ const BackOfficeForm = ({
                 <TextField
                   variant="standard"
                   name={"description"}
-                  value={responseType.description}
+                  value={localResponseType.description}
                   onChange={handleChange}
                 />
               </StyledContainerThree>
@@ -211,8 +192,10 @@ const BackOfficeForm = ({
               justifyContent: "start",
             }}
           >
-            <Typography variant="h2">리포트 버전</Typography>
-            <BasicTable />
+            <StyledDivHeader>
+              <Typography variant="h2">리포트 버전</Typography>
+            </StyledDivHeader>
+            <BasicTable reportTypeVersion={reportTypeVersion} />
           </StyledContainerOne>
         </React.Fragment>
       )}
@@ -229,10 +212,22 @@ BackOfficeForm.getLayout = (page: ReactElement) => (
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const selectedAnimal = context.query.animal;
 
-  const reportTypeResponse = await axios.get(
-    `${process.env.NEXT_PUBLIC_IP_ADDRESS}/reports/types/${selectedAnimal}`
-  );
-  const responseType: ReportTypeSimpleResponseDto =
-    await reportTypeResponse.data;
-  return { props: { responseType } };
+  try {
+    const reportTypeResponse = await axios.get(
+      `${process.env.NEXT_PUBLIC_IP_ADDRESS}/reports/types/${selectedAnimal}`
+    );
+    const reportType: ReportTypeSimpleResponseDto =
+      await reportTypeResponse.data;
+
+    const reportTypeVersionResponse = await axios.get(
+      `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/types/${selectedAnimal}/versions` // admin용은 없어...
+    );
+    const reportTypeVersion = await reportTypeVersionResponse.data;
+
+    return { props: { reportType, reportTypeVersion } };
+  } catch {
+    console.log("There was an error");
+  }
+
+  return { props: {} };
 };

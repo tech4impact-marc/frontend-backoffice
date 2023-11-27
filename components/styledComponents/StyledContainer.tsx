@@ -32,3 +32,10 @@ export const StyledContainerHeader = styled(Container)`
   height: 2rem;
   margin-bottom: -1rem;
 `;
+
+export const StyledDivHeader = styled("div")`
+  width: 100%;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+`;
