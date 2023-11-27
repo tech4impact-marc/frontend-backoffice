@@ -1,11 +1,25 @@
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
-import { IconButton, TextField, Typography } from "@mui/material";
+import {
+  Button,
+  Container,
+  Divider,
+  FormControl,
+  IconButton,
+  TextField,
+  Typography,
+} from "@mui/material";
 import axios from "axios";
 import { useRouter } from "next/router";
 import { useState } from "react";
 
-import { StyledButton } from "@/components/layout/BackOfficeLayout";
-import { StyledContainerOne } from "@/components/styledComponents/StyledContainer";
+import {
+  StyledContainerOne,
+  StyledContainerTwo,
+  StyledContainerZero,
+} from "@/components/styledComponents/StyledContainer";
+import theme from "@/styles/theme";
+import { StyledButton } from "../layout/BackOfficeLayout";
+
 const NewReportOverlay = ({
   setOpenBackdrop,
 }: {
@@ -14,22 +28,27 @@ const NewReportOverlay = ({
   const [newAnimal, setNewAnimal] = useState<string>("");
 
   const router = useRouter();
+  const { pathname } = router;
 
   const handleNew = () => {
     const initData = {
       label: newAnimal,
+      subject: newAnimal,
       title: `${newAnimal} 설문지`,
       subtitle: `${newAnimal} 분포 및 서식 조사`,
       description: `${newAnimal} 서포터즈로 참여하신 여러분께 감사드립니다.\n 여러분의 관찰 기록을 바탕으로 제주 ${newAnimal}의 분포 및 생태를 파악하고, 보전자료로 활용하고자 합니다.`,
-      questions: [],
+      memo: ``,
     };
     axios
-      .post(`${process.env.NEXT_PUBLIC_IP_ADDRESS}/reports/types`, initData)
+      .post(
+        `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/types`,
+        initData
+      )
       .then((response) => {
         if (response.status == 200) {
           console.log(response);
           alert("설문이 추가되었습니다");
-          router.push(`/report/${response.data.id}`);
+          router.push(`/${pathname}/${response.data.id}`);
         } else {
           console.log(response);
           alert("오류가 있었습니다");
@@ -42,42 +61,57 @@ const NewReportOverlay = ({
   };
 
   return (
-    <StyledContainerOne
+    <Container
       style={{
         backgroundColor: "white",
         minWidth: "auto",
-        width: "50rem",
+        maxWidth: "30rem",
         height: "auto",
         borderRadius: "1rem",
+        padding: "1rem 0rem",
+        rowGap: "1rem",
       }}
     >
-      <IconButton
-        style={{ margin: "-0.5rem 0 -2.5rem auto" }}
-        onClick={() => {
-          setOpenBackdrop(false);
-        }}
-      >
-        <CloseRoundedIcon />
-      </IconButton>
-      <Typography variant="h2">동물 이름을 입력하세요</Typography>
+      <StyledContainerZero>
+        <Typography variant="h2">리포트 새로 추가하기</Typography>
+      </StyledContainerZero>
+      <Divider />
+      <StyledContainerZero>
+        <FormControl fullWidth>
+          <TextField
+            variant="standard"
+            name={"title"}
+            label="동물 이름"
+            value={newAnimal}
+            onChange={(e) => {
+              setNewAnimal(e.target.value);
+            }}
+          />
+        </FormControl>
+      </StyledContainerZero>
 
-      <TextField
-        variant="outlined"
-        name={"title"}
-        value={newAnimal}
-        onChange={(e) => {
-          setNewAnimal(e.target.value);
-        }}
-      />
-      <StyledButton
-        variant="contained"
-        onClick={handleNew}
-        disabled={!newAnimal}
-        disableElevation
+      <StyledContainerZero
+        style={{ flexDirection: "row", columnGap: "0.6rem", width: "100%" }}
       >
-        새로운 설문으로 갈까요?
-      </StyledButton>
-    </StyledContainerOne>
+        <StyledButton
+          onClick={() => setOpenBackdrop(false)}
+          sx={{
+            flex: "1",
+          }}
+        >
+          닫기
+        </StyledButton>
+        <StyledButton
+          onClick={handleNew}
+          sx={{
+            flex: "1",
+          }}
+          disabled={!newAnimal}
+        >
+          추가하기
+        </StyledButton>
+      </StyledContainerZero>
+    </Container>
   );
 };
 export default NewReportOverlay;

@@ -4,26 +4,32 @@ import { createTheme, responsiveFontSizes } from "@mui/material/styles";
 let theme = createTheme({
   palette: {
     secondary: {
-      main: "#F2F2F2",
-      light: "#ffffff",
-      dark: "#BDBDBD",
+      main: "#111",
+      light: "#efefef",
+      dark: "#000",
+      contrastText: "#fff",
     },
+    // secondary: {
+    //   main: "#F2F2F2",
+    //   light: "#ffffff",
+    //   dark: "#BDBDBD",
+    // },
   },
   typography: {
     button: {
-      fontSize: "0.8rem",
+      fontSize: "0.875rem",
       fontWeight: 700,
     },
     h1: {
-      fontSize: "1.6rem",
+      fontSize: "2rem",
       fontWeight: 600,
     },
     h2: {
-      fontSize: "1.2rem",
+      fontSize: "1.25rem",
       fontWeight: 600,
     },
     h3: {
-      fontSize: "0.9rem",
+      fontSize: "1.125rem",
       fontWeight: 600,
     },
     body1: {
