@@ -9,10 +9,13 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import axios from "axios";
 
+//import dataResponse from "@/pages/user/contents";
+
 const columns: string[] = ["리포트 ID", "리포트 타입", "게시 일자"];
 
 export default function User() {
   const router = useRouter();
+  const { user } = router.query;
   const [initialUserInfo, setInitialUserInfo] = useState({
     userId: 0,
     signup: "",
@@ -31,20 +34,44 @@ export default function User() {
   const [isEmailChanged, setIsEmailChanged] = useState(false);
   const [isPhoneNumberChanged, setIsPhoneNumberChanged] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
-  const [rows, setRows] = useState([
-    {
-      "리포트 ID": "001",
-      "리포트 타입": "dummy1",
-      "게시 일자": "2023-11-01",
-    },
-    {
-      "리포트 ID": "001",
-      "리포트 타입": "dummy2",
-      "게시 일자": "2023-11-01",
-    },
-  ]);
+  const [rows, setRows] = useState<
+    { "리포트 ID": number; "리포트 타입": string; "게시 일자": string }[]
+  >([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalNumberOfPages, setTotalNumberOfPages] = useState(1);
+
+  const fetchReport = async (pageArg: number = 0, userId: number = 0) => {
+    const params: { [key: string]: number | string } = {};
+
+    if (pageArg) {
+      params.page = pageArg;
+    }
+
+    if (userId) {
+      params.user = userId;
+    }
+
+    params.size = 10;
+
+    try {
+      const response = await axios.get(`http://3.37.177.6/api/admin/reports`, {
+        params: params,
+      });
+      const dataResponse = response.data;
+      console.log(dataResponse);
+      const newRows = dataResponse.contents.map((report: any) => ({
+        "리포트 ID": report.id,
+        "리포트 타입": report.reportTypeVersion.reportType.label,
+        "게시 일자": report.createdDateTime,
+      }));
+
+      console.log(newRows);
+      setRows(newRows);
+      setTotalNumberOfPages(dataResponse.totalNumberOfPages);
+    } catch (error) {
+      console.log("에러 발생: ", error);
+    }
+  };
 
   const handleNicknameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newNickname = event.target.value;
@@ -83,6 +110,8 @@ export default function User() {
         phoneNumber: userInfo.phoneNumber,
         profileIsDefaultImage: false,
       };
+      console.log(updatedUserInfo);
+      console.log(userInfo.userId);
 
       const response = await axios.patch(
         `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/users/${userInfo.userId}`,
@@ -105,11 +134,14 @@ export default function User() {
     newPage: number
   ) => {
     setCurrentPage(newPage - 1);
+    fetchReport(currentPage, userInfo.userId);
     console.log(currentPage);
   };
 
   useEffect(() => {
-    const { user } = router.query;
+    if (!user) {
+      return;
+    }
     const fetchData = async () => {
       try {
         const response = await axios.get(
@@ -120,6 +152,12 @@ export default function User() {
             },
           }
         );
+        console.log(user);
+        console.log(response.data);
+        if (response.data.totalNumberOfElements === 0) {
+          alert("존재하지 않는 유저입니다.");
+          router.back();
+        }
         const userData = response.data.contents[0];
         setInitialUserInfo({
           userId: userData.id,
@@ -137,6 +175,7 @@ export default function User() {
         });
         console.log(user);
         console.log(userInfo);
+        console.log(userInfo.userId);
       } catch (error) {
         console.log("에러 발생: ", error);
       }
@@ -148,7 +187,15 @@ export default function User() {
     setTimeout(() => {
       setShowSuccessMessage(false);
     }, 3000);
-  }, []);
+  }, [user]);
+
+  useEffect(() => {
+    if (userInfo.userId === 0) {
+      return;
+    }
+    console.log(currentPage, userInfo.userId);
+    fetchReport(currentPage, userInfo.userId);
+  }, [currentPage, userInfo.userId]);
 
   return (
     <React.Fragment>
@@ -281,26 +328,26 @@ export default function User() {
             <StickyHeadTable3 columns={columns} rows={rows} />
           </StyledContainerOne>
         </Container>
-        {showSuccessMessage && (
-          <Container
-            sx={{
-              position: "absolute",
-              left: "calc(32px+3rem)",
-              bottom: "32px",
-              width: "240px",
-              padding: "16px",
-              justifyContent: "center",
-              alignItems: "center",
-              backgroundColor: "#3DC74B",
-              borderRadius: "8px",
-            }}
-          >
-            <Typography variant="body1" color="secondary">
-              변경사항이 저장되었습니다.
-            </Typography>
-          </Container>
-        )}
       </Container>
+      {showSuccessMessage && (
+        <Container
+          sx={{
+            position: "absolute",
+            left: "calc(32px+3rem)",
+            bottom: "32px",
+            width: "240px",
+            padding: "16px",
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "#3DC74B",
+            borderRadius: "8px",
+          }}
+        >
+          <Typography variant="body1" color="secondary">
+            변경사항이 저장되었습니다.
+          </Typography>
+        </Container>
+      )}
     </React.Fragment>
   );
 }
