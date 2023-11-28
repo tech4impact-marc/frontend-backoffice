@@ -36,7 +36,7 @@ export default function StickyHeadTableUser2({
                 <TableCell
                   colSpan={columns.length}
                   align="center"
-                  sx={{ height: "200px" }}
+                  sx={{ height: "400px" }}
                 >
                   검색 결과가 없습니다.
                 </TableCell>

@@ -39,7 +39,11 @@ export default function StickyHeadTableUser1({
           <TableBody>
             {rows.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={columns.length} align="center">
+                <TableCell
+                  colSpan={columns.length}
+                  align="center"
+                  sx={{ height: "400px" }}
+                >
                   검색 결과가 없습니다.
                 </TableCell>
               </TableRow>

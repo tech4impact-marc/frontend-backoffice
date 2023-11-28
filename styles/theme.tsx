@@ -22,6 +22,17 @@ let theme = createTheme({
     // },
   },
   typography: {
+    fontFamily: [
+      "Pretendard",
+      "Roboto",
+      "Noto Sans KR",
+      "Segoe UI",
+      "Malgun Gothic",
+      "Apple Color Emoji",
+      "Segoe UI Emoji",
+      "Segoe UI Symbol",
+      "sans-serif",
+    ].join(","),
     button: {
       fontSize: "0.875rem",
       fontWeight: 700,

@@ -1,13 +1,6 @@
-import { StyledContainerOne } from "@/components/styledComponents/StyledContainer";
 import SearchIcon from "@mui/icons-material/Search";
 import StickyHeadTableUser1 from "@/components/styledComponents/StyledTableUser1";
-import {
-  Pagination,
-  IconButton,
-  TextField,
-  Typography,
-  Container,
-} from "@mui/material";
+import { Pagination, IconButton, TextField, Container } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
@@ -80,66 +73,41 @@ export default function AllUsers() {
     <React.Fragment>
       <Container
         sx={{
+          alignItems: "flex-start",
+          width: "100%",
           height: "100%",
-          padding: "0",
+          flex: "1 0 0",
+          padding: "16px 32px 32px 32px",
+          gap: "16px",
         }}
       >
-        <Container
-          sx={{
-            width: "100%",
-            height: "120px",
-            backgroundColor: "#F2F2F2",
-            justifyContent: "center",
-            padding: "32px",
-          }}
-        >
-          <Typography variant="h1">회원관리</Typography>
-        </Container>
-        <Container
-          sx={{
-            alignItems: "flex-start",
-            alignSelf: "stretch",
-            padding: "16px 32px 32px 32px",
-            gap: "16px",
-            flex: "1 0 0",
-          }}
-        >
-          <StyledContainerOne
-            style={{
-              backgroundColor: "white",
-              rowGap: "1.5rem",
-              height: "auto",
+        <Container sx={{ flexDirection: "row" }}>
+          <TextField
+            variant="standard"
+            value={searchValue}
+            onChange={handleChange}
+            InputProps={{
+              endAdornment: (
+                <IconButton size="large" onClick={handleSearch}>
+                  <SearchIcon />
+                </IconButton>
+              ),
             }}
-          >
-            <Container sx={{ flexDirection: "row" }}>
-              <TextField
-                variant="standard"
-                value={searchValue}
-                onChange={handleChange}
-                InputProps={{
-                  endAdornment: (
-                    <IconButton size="large" onClick={handleSearch}>
-                      <SearchIcon />
-                    </IconButton>
-                  ),
-                }}
-                sx={{
-                  width: "358px",
-                  alignSelf: "stretch",
-                }}
-              ></TextField>
-              <Pagination
-                count={totalNumberOfPages}
-                page={currentPage + 1}
-                onChange={handlePageChange}
-                sx={{
-                  marginLeft: "auto",
-                }}
-              />
-            </Container>
-            <StickyHeadTableUser1 columns={columns} rows={rows} />
-          </StyledContainerOne>
+            sx={{
+              width: "358px",
+              alignSelf: "stretch",
+            }}
+          ></TextField>
+          <Pagination
+            count={totalNumberOfPages}
+            page={currentPage + 1}
+            onChange={handlePageChange}
+            sx={{
+              marginLeft: "auto",
+            }}
+          />
         </Container>
+        <StickyHeadTableUser1 columns={columns} rows={rows} />
       </Container>
     </React.Fragment>
   );
