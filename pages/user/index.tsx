@@ -1,6 +1,6 @@
 import { StyledContainerOne } from "@/components/styledComponents/StyledContainer";
 import SearchIcon from "@mui/icons-material/Search";
-import StickyHeadTable2 from "@/components/styledComponents/StyledTable2";
+import StickyHeadTableUser1 from "@/components/styledComponents/StyledTableUser1";
 import {
   Pagination,
   IconButton,
@@ -137,7 +137,7 @@ export default function AllUsers() {
                 }}
               />
             </Container>
-            <StickyHeadTable2 columns={columns} rows={rows} />
+            <StickyHeadTableUser1 columns={columns} rows={rows} />
           </StyledContainerOne>
         </Container>
       </Container>

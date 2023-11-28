@@ -3,7 +3,7 @@ import {
   StyledContainerOne,
   StyledContainerThree,
 } from "@/components/styledComponents/StyledContainer";
-import StickyHeadTable3 from "@/components/styledComponents/StyledTable3";
+import StickyHeadTableUser2 from "@/components/styledComponents/StyledTableUser2";
 import { Container, Pagination, TextField, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
@@ -325,7 +325,7 @@ export default function User() {
                 }}
               />
             </Container>
-            <StickyHeadTable3 columns={columns} rows={rows} />
+            <StickyHeadTableUser2 columns={columns} rows={rows} />
           </StyledContainerOne>
         </Container>
       </Container>
