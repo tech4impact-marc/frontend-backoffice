@@ -10,6 +10,7 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
+import { DataGrid, GridColDef, GridEventListener } from "@mui/x-data-grid";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 
@@ -79,5 +80,61 @@ export const BasicTable = ({
         </TableBody>
       </Table>
     </TableContainer>
+  );
+};
+
+export const BasicReportsTable = ({
+  responseTypeVersionQuestions,
+}: {
+  responseTypeVersionQuestions?: Question[];
+}) => {
+  const columns: GridColDef[] = [
+    { field: "questionOrder", headerName: "ID", width: 90 },
+    {
+      field: "title",
+      headerName: "Title",
+      width: 150,
+    },
+    {
+      field: "description",
+      headerName: "Description",
+      width: 150,
+    },
+    {
+      field: "isMain",
+      headerName: "is Main",
+      width: 150,
+    },
+    {
+      field: "required",
+      headerName: "Required",
+      width: 150,
+    },
+    {
+      field: "type",
+      headerName: "Type",
+      width: 150,
+    },
+  ];
+  const router = useRouter();
+  const { pathname, query } = router;
+
+  const handleRowClick: GridEventListener<"rowClick"> = (params) => {
+    router.push(
+      `/reports/types/${query.animal}/versions/${query.version}/questions/${params.row.id}`
+    );
+  };
+
+  return (
+    <DataGrid
+      rows={responseTypeVersionQuestions as Question[]}
+      columns={columns}
+      initialState={{
+        sorting: {
+          sortModel: [{ field: "questionOrder", sort: "asc" }],
+        },
+      }}
+      onRowClick={handleRowClick}
+    />
   );
 };

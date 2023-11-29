@@ -24,6 +24,7 @@ export const StyledContainerTwo = styled(Container)`
 export const StyledContainerThree = styled(Container)`
   padding: 0 !important;
   row-gap: 0.5rem;
+  max-width: none;
 `;
 
 export const StyledContainerHeader = styled(Container)`
@@ -35,7 +36,8 @@ export const StyledContainerHeader = styled(Container)`
 
 export const StyledDivHeader = styled("div")`
   width: 100%;
-  height: 3rem;
+  height: auto;
+  min-height: 3rem;
   display: flex;
   align-items: center;
 `;

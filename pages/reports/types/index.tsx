@@ -17,7 +17,10 @@ export interface Animal {
   id: number;
   label: string;
   subject: string;
-  icon?: React.ReactNode;
+  thumbnailUrl: string;
+  title: string;
+  subtitle: string;
+  description: string;
 }
 
 export const NewFormButton = () => {
@@ -63,13 +66,12 @@ const BackOfficeForm = ({ animals }: { animals: Animal[] }) => {
   return (
     <Grid container spacing={2}>
       {animals &&
-        animals.map(({ id, subject }, index) => (
-          <Grid item>
+        animals.map(({ id, subject, thumbnailUrl }, index) => (
+          <Grid key={index} item>
             <div
-              key={index}
               color="secondary"
               onClick={() => {
-                router.push(`/${pathname}/${id}`);
+                router.push(`${pathname}/${id}`);
               }}
               style={{
                 background: "#FFF",
@@ -85,8 +87,8 @@ const BackOfficeForm = ({ animals }: { animals: Animal[] }) => {
               <Typography variant="h3">{subject}</Typography>
 
               <Image
-                src="/marc_logo.png"
-                alt={"logo"}
+                src={thumbnailUrl ? thumbnailUrl : "/marc_logo.png"}
+                alt={"animal icon"}
                 width={80}
                 height={80}
                 style={{ marginLeft: "auto", marginTop: "auto" }}
