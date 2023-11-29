@@ -22,13 +22,6 @@ const columns: string[] = ["리포트 ID", "리포트 타입", "게시 일자"];
 export default function User() {
   const router = useRouter();
   const { user } = router.query;
-  const [initialUserInfo, setInitialUserInfo] = useState({
-    userId: 0,
-    signup: "",
-    nickname: "",
-    email: "",
-    phoneNumber: "",
-  });
   const [userInfo, setUserInfo] = useState({
     userId: 0,
     signup: "",
@@ -43,7 +36,7 @@ export default function User() {
   });
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [rows, setRows] = useState<
-    { "리포트 ID": number; "리포트 타입": string; "게시 일자": string }[]
+    { "포스트 ID": number; "리포트 타입": string; "게시 일자": string }[]
   >([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalNumberOfPages, setTotalNumberOfPages] = useState(1);
@@ -162,13 +155,6 @@ export default function User() {
           router.back();
         }
         const userData = response.data.contents[0];
-        setInitialUserInfo({
-          userId: userData.id,
-          signup: userData.createdDateTime,
-          nickname: userData.nickname,
-          email: userData.email,
-          phoneNumber: userData.phoneNumber,
-        });
         setUserInfo({
           userId: userData.id,
           signup: userData.createdDateTime,
@@ -297,7 +283,7 @@ export default function User() {
           }}
         >
           <Container sx={{ flexDirection: "row" }}>
-            <Typography variant="h2">유저 리포트</Typography>
+            <Typography variant="h2">유저 포스트</Typography>
 
             <Pagination
               count={totalNumberOfPages}
