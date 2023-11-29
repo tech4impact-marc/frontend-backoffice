@@ -12,7 +12,7 @@ import { NewFormButton } from "@/pages/reports/types";
 const backOfficeLinks = {
   "/user": "회원관리",
   "/reports/types": "리포트 관리",
-  "/logout": "로그아웃",
+  "/auth/logout": "로그아웃",
 };
 
 export const StyledButton = ({
@@ -119,7 +119,7 @@ export default function BackOfficeLayout({
           <MenuButton
             key={index}
             path={path}
-            style={{ marginTop: path === "/logout" ? "auto" : "0" }}
+            style={{ marginTop: path === "/auth/logout" ? "auto" : "0" }}
           />
         ))}
       </StyledContainerOne>
