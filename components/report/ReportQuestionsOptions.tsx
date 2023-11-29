@@ -5,7 +5,7 @@ import axios from "axios";
 import React from "react";
 
 import { StyledButton } from "@/components/layout/BackOfficeLayout";
-import { Option, Question } from "@/pages/report/[animal]";
+import { Option, Question } from "@/pages/reports/types/[animal]";
 
 const ReportQuestionsOptions = ({
   selectedAnimal,

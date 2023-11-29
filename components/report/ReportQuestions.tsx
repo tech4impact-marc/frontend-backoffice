@@ -11,17 +11,19 @@ import {
 } from "@/components/styledComponents/StyledContainer";
 
 import ReportQuestionsOptions from "./ReportQuestionsOptions";
-import { Option, Question } from "@/pages/report/[animal]";
+import { Option, Question } from "@/pages/reports/types/[animal]";
 
 export interface ReportQuestion extends Omit<Question, "id" | "options"> {
   options: Option[];
 }
 
 const questionOptions = [
-  "LOCATION",
-  "MULTIPLE_CHOICE(MULTI)",
+  "SHORT_ANSWER",
+  "LONG_ANSWER",
   "MULTIPLE_CHOICE(SINGLE)",
+  "MULTIPLE_CHOICE(MULTI)",
   "DATETIME",
+  "LOCATION",
   "FILE",
 ];
 
@@ -213,6 +215,7 @@ const ReportQuestion = ({
         </StyledButton>
         <StyledButton
           variant="contained"
+          color="secondary"
           onClick={handleSubmit}
           disableElevation
         >
