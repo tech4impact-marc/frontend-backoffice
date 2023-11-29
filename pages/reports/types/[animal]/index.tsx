@@ -163,7 +163,7 @@ const BackOfficeForm = ({
   }
 
   return (
-    <React.Fragment>
+    <BackOfficeLayout title={localResponseType.subject}>
       <React.Fragment>
         <StyledContainerOne
           style={{
@@ -266,15 +266,13 @@ const BackOfficeForm = ({
           <BasicTable reportTypeVersion={reportTypeVersion} />
         </StyledContainerOne>
       </React.Fragment>
-    </React.Fragment>
+    </BackOfficeLayout>
   );
 };
 
 export default BackOfficeForm;
 
-BackOfficeForm.getLayout = (page: ReactElement) => (
-  <BackOfficeLayout>{page}</BackOfficeLayout>
-);
+BackOfficeForm.getLayout = (page: ReactElement) => <>{page}</>;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const setOrigin = {

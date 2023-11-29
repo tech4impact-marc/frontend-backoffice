@@ -116,11 +116,13 @@ const StyledTab = styled((props: StyledTabProps) => (
 const ReportVersion = ({
   reportTypeVersion,
   reports,
+  title,
 }: {
   reportTypeVersion: ReportTypeVersionSimpleResponseDto;
   reports: ReportResponseDto;
+  title: string;
 }) => {
-  console.log(reports);
+  console.log(reportTypeVersion);
   const { data: csvData, headers: csvHeaders } = useMemo(
     () =>
       reportTypeVersion && reports
@@ -218,7 +220,7 @@ const ReportVersion = ({
   };
 
   return (
-    <React.Fragment>
+    <BackOfficeLayout title={title}>
       <StyledContainerOne
         style={{
           backgroundColor: "white",
@@ -309,14 +311,12 @@ const ReportVersion = ({
           <ReportResponseTable csvHeaders={csvHeaders} csvData={csvData} />
         </StyledContainerOne>
       )}
-    </React.Fragment>
+    </BackOfficeLayout>
   );
 };
 export default ReportVersion;
 
-ReportVersion.getLayout = (page: ReactElement) => (
-  <BackOfficeLayout title="hi" children={page} />
-);
+ReportVersion.getLayout = (page: ReactElement) => <>{page}</>;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const selectedAnimal = context.query.animal;
@@ -328,6 +328,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 
   try {
+    const reportTypeResponse = await axios.get(
+      `${process.env.NEXT_PUBLIC_IP_ADDRESS}/reports/types/${selectedAnimal}`,
+      setOrigin
+    );
+    const title = await reportTypeResponse.data.subject;
+
     const reportTypeVersionResponse = await axios.get(
       `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/types/${selectedAnimal}/versions/${selectedVersion}`,
       setOrigin
@@ -340,7 +346,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     );
     const reports = await reportsResponse.data;
 
-    return { props: { reportTypeVersion, reports } };
+    return { props: { reportTypeVersion, reports, title } };
   } catch (error) {
     return { props: {} };
   }
