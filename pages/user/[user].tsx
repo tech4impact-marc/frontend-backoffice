@@ -36,9 +36,11 @@ export default function User() {
     email: "",
     phoneNumber: "",
   });
-  const [isNicknameChanged, setIsNicknameChanged] = useState(false);
-  const [isEmailChanged, setIsEmailChanged] = useState(false);
-  const [isPhoneNumberChanged, setIsPhoneNumberChanged] = useState(false);
+  const [prevUserInfo, setPrevUserInfo] = useState({
+    nickname: "",
+    email: "",
+    phoneNumber: "",
+  });
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [rows, setRows] = useState<
     { "리포트 ID": number; "리포트 타입": string; "게시 일자": string }[]
@@ -78,32 +80,26 @@ export default function User() {
   };
 
   const handleNicknameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newNickname = event.target.value;
     setUserInfo({
       ...userInfo,
-      nickname: newNickname,
+      nickname: event.target.value,
     });
-    setIsNicknameChanged(newNickname !== initialUserInfo.nickname);
   };
 
   const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newEmail = event.target.value;
     setUserInfo({
       ...userInfo,
-      email: newEmail,
+      email: event.target.value,
     });
-    setIsEmailChanged(newEmail !== initialUserInfo.email);
   };
 
   const handlePhoneNumberChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    const newPhoneNumber = event.target.value;
     setUserInfo({
       ...userInfo,
-      phoneNumber: newPhoneNumber,
+      phoneNumber: event.target.value,
     });
-    setIsPhoneNumberChanged(newPhoneNumber !== initialUserInfo.phoneNumber);
   };
 
   const handleSaveChanges = async () => {
@@ -114,8 +110,6 @@ export default function User() {
         phoneNumber: userInfo.phoneNumber,
         profileIsDefaultImage: false,
       };
-      console.log(updatedUserInfo);
-      console.log(userInfo.userId);
 
       const response = await axios.patch(
         `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/users/${userInfo.userId}`,
@@ -124,6 +118,11 @@ export default function User() {
 
       console.log("변경사항이 성공적으로 반영되었습니다.", response.data);
       setShowSuccessMessage(true);
+      setPrevUserInfo({
+        nickname: userInfo.nickname,
+        email: userInfo.email,
+        phoneNumber: userInfo.phoneNumber,
+      });
 
       setTimeout(() => {
         setShowSuccessMessage(false);
@@ -228,7 +227,11 @@ export default function User() {
                 color="primary"
                 sx={{ marginLeft: "auto" }}
                 disabled={
-                  !(isNicknameChanged || isEmailChanged || isPhoneNumberChanged)
+                  !(
+                    userInfo.nickname !== prevUserInfo.nickname ||
+                    userInfo.email !== prevUserInfo.email ||
+                    userInfo.phoneNumber !== prevUserInfo.phoneNumber
+                  )
                 }
                 onClick={handleSaveChanges}
               >
