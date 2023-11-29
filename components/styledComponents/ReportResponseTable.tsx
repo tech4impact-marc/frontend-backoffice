@@ -193,7 +193,7 @@ export const ReportResponseTable = ({
         sx={{ overflow: "scroll", minWidth: "100%" }}
         rowModesModel={rowModesModel}
         apiRef={apiRef}
-        getRowId={(row) => row.statId}
+        getRowId={(row) => row.id}
       />
     </Box>
   );
