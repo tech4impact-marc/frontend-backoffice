@@ -263,9 +263,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     const published = await reportTypeVersionResponse.data.published;
 
     return { props: { question, published } };
-  } catch {
-    console.log("There was an error");
+  } catch (error) {
+    return { props: {} };
   }
-
-  return { props: {} };
 };
