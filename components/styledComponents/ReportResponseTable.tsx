@@ -127,6 +127,7 @@ export const ReportResponseTable = ({
         if (isInEditMode) {
           return [
             <GridActionsCellItem
+              key={1}
               icon={<SaveIcon />}
               label="Save"
               sx={{
@@ -135,6 +136,7 @@ export const ReportResponseTable = ({
               onClick={handleSaveClick(id)}
             />,
             <GridActionsCellItem
+              key={2}
               icon={<ClearRoundedIcon />}
               label="Cancel"
               className="textPrimary"
@@ -145,6 +147,7 @@ export const ReportResponseTable = ({
         } else {
           return [
             <GridActionsCellItem
+              key={1}
               icon={<EditRoundedIcon />}
               label="Edit"
               className="textPrimary"
@@ -152,6 +155,7 @@ export const ReportResponseTable = ({
               color="inherit"
             />,
             <GridActionsCellItem
+              key={2}
               icon={<DeleteRoundedIcon />}
               label="Delete"
               onClick={handleDeleteClick(id)}
