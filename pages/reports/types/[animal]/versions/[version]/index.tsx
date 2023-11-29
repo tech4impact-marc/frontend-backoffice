@@ -116,10 +116,6 @@ const ReportVersion = ({
   reportTypeVersion: ReportTypeVersionSimpleResponseDto;
   reports: ReportResponseDto;
 }) => {
-  if (!reportTypeVersion || !reports) {
-    return <React.Fragment></React.Fragment>;
-  }
-
   const { data: csvData, headers: csvHeaders } = useMemo(
     () => responseToCsvData(reportTypeVersion.questions, reports.contents),
     []
@@ -132,6 +128,10 @@ const ReportVersion = ({
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setTab(newValue);
   };
+
+  if (!reportTypeVersion || !reports) {
+    return <React.Fragment></React.Fragment>;
+  }
 
   const handlePublish = async () => {
     try {
@@ -328,9 +328,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     const reports = await reportsResponse.data;
 
     return { props: { reportTypeVersion, reports } };
-  } catch {
-    console.log("There was an error");
+  } catch (error) {
+    return { props: {} };
   }
-
-  return { props: {} };
 };
