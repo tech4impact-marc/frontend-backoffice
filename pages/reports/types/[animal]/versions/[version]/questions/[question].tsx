@@ -14,8 +14,6 @@ import { useRouter } from "next/router";
 import { ReactElement, useEffect, useMemo, useState } from "react";
 import React from "react";
 
-import ReportQuestions from "@/components/report/ReportQuestions";
-import ReportType from "@/components/report/ReportType";
 import BackOfficeLayout, {
   StyledButton,
 } from "@/components/layout/BackOfficeLayout";
@@ -73,7 +71,7 @@ const BackOfficeForm = ({
     setUpdates(1);
   };
 
-  const handleNewOption = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleNewOption: React.MouseEventHandler<HTMLButtonElement> = (e) => {
     const newOption: Option = {
       answerOrder: localQuestion.options.length + 1,
       value: "",
@@ -89,8 +87,10 @@ const BackOfficeForm = ({
     setUpdates(1);
   };
 
-  const handleDeleteOption = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+  const handleDeleteOption: React.MouseEventHandler<HTMLButtonElement> = (
+    e
+  ) => {
+    const { name } = e.target as HTMLButtonElement;
     setLocalQuestion((prevState) => {
       let updatedOptions = prevState.options;
       updatedOptions.splice(parseInt(name), 1);

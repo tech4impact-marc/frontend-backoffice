@@ -5,8 +5,6 @@ import { ReactElement, useEffect, useMemo, useState } from "react";
 import React from "react";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 
-import ReportQuestions from "@/components/report/ReportQuestions";
-import ReportType from "@/components/report/ReportType";
 import BackOfficeLayout, {
   StyledButton,
 } from "@/components/layout/BackOfficeLayout";
@@ -49,6 +47,7 @@ export interface Question {
 }
 
 export interface Option {
+  id?: number;
   answerOrder: number;
   value: string;
 }

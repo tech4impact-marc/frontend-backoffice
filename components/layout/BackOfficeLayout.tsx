@@ -1,5 +1,4 @@
 import {
-  Button,
   ButtonTypeMap,
   Select,
   TextField,
@@ -8,6 +7,7 @@ import {
 } from "@mui/material";
 import { useRouter } from "next/router";
 import React from "react";
+import Button, { ButtonProps } from "@mui/material/Button";
 
 import CircleOutlinedIcon from "@mui/icons-material/CircleOutlined";
 import { StyledContainerOne } from "@/components/styledComponents/StyledContainer";
@@ -22,41 +22,23 @@ const backOfficeLinks = {
   "/logout": "로그아웃",
 };
 
-export const StyledButton = ({
-  onClick,
-  children,
-  sx,
-  disabled,
-  color,
-  name,
-  variant,
-  startIcon,
-}: {
-  onClick?: any;
-  children?: React.ReactNode;
-  sx?: React.CSSProperties;
-  disabled?: boolean;
-  color?: ButtonTypeMap["props"]["color"];
-  name?: string;
-  variant?: ButtonTypeMap["props"]["variant"];
-  startIcon?: ButtonTypeMap["props"]["startIcon"];
-}) => {
+export const StyledButton = (props: ButtonProps) => {
   return (
     <Button
-      variant={variant ? variant : "contained"}
+      variant={props.variant ? props.variant : "contained"}
       sx={{
         padding: "0.7rem 2rem",
         borderRadius: "0.5rem",
-        ...sx,
+        ...props.sx,
       }}
-      onClick={onClick}
-      disabled={disabled}
-      color={color ? color : "primary"}
-      name={name}
-      startIcon={startIcon}
+      onClick={props.onClick}
+      disabled={props.disabled}
+      color={props.color ? props.color : "primary"}
+      name={props.name}
+      startIcon={props.startIcon}
       disableElevation
     >
-      {children}
+      {props.children}
     </Button>
   );
 };

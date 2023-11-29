@@ -13,8 +13,8 @@ interface AnswerTypeProps {
   published: boolean;
   question: Question;
   handleChangeOptions: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  handleNewOption: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  handleDeleteOption: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleNewOption: React.MouseEventHandler<HTMLButtonElement>;
+  handleDeleteOption: React.MouseEventHandler<HTMLButtonElement>;
 }
 
 const QuestionChoice = ({
