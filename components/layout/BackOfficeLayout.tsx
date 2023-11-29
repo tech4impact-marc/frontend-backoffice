@@ -1,20 +1,77 @@
-import { Button, styled } from "@mui/material";
+import {
+  ButtonTypeMap,
+  Select,
+  TextField,
+  Typography,
+  styled,
+} from "@mui/material";
 import { useRouter } from "next/router";
 import React from "react";
+import Button, { ButtonProps } from "@mui/material/Button";
 
+import CircleOutlinedIcon from "@mui/icons-material/CircleOutlined";
 import { StyledContainerOne } from "@/components/styledComponents/StyledContainer";
+import Image from "next/image";
+import { Container } from "@mui/system";
+import theme from "@/styles/theme";
+import { NewFormButton } from "@/pages/reports/types";
 
-const backOfficeLinks = [
-  { link: "/user", name: "회원관리" },
-  { link: "/report", name: "리포트 관리" },
-  // { link: "/post", name: "포스트 관리" },
-];
+const backOfficeLinks = {
+  "/user": "회원관리",
+  "/reports/types": "리포트 관리",
+  "/logout": "로그아웃",
+};
 
-export const StyledButton = styled(Button)`
-  padding: 0.6rem 2rem;
-  border-radius: 8px;
-  border: 1px solid var(--Gray-4, #bdbdbd);
-`;
+export const StyledButton = (props: ButtonProps) => {
+  return (
+    <Button
+      variant={props.variant ? props.variant : "contained"}
+      sx={{
+        padding: "0.7rem 2rem",
+        borderRadius: "0.5rem",
+        ...props.sx,
+      }}
+      onClick={props.onClick}
+      disabled={props.disabled}
+      color={props.color ? props.color : "primary"}
+      name={props.name}
+      startIcon={props.startIcon}
+      disableElevation
+    >
+      {props.children}
+    </Button>
+  );
+};
+
+const MenuButton = ({
+  path,
+  style,
+}: {
+  path: string;
+  style?: React.CSSProperties;
+}) => {
+  const router = useRouter();
+  const { pathname } = router;
+
+  return (
+    <Button
+      variant="text"
+      color="secondary"
+      onClick={() => {
+        router.push(path);
+      }}
+      startIcon={<CircleOutlinedIcon sx={{ width: "1rem" }} />}
+      disabled={pathname == path}
+      style={{
+        justifyContent: "flex-start",
+        padding: "0.6rem 1.2rem",
+        ...style,
+      }}
+    >
+      {backOfficeLinks[path as keyof typeof backOfficeLinks]}
+    </Button>
+  );
+};
 
 export default function BackOfficeLayout({
   children,
@@ -22,56 +79,80 @@ export default function BackOfficeLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
+  const { pathname, query } = router;
 
   return (
     <div style={{ width: "100vw", height: "100vh" }}>
       <StyledContainerOne
         style={{
-          minWidth: "250px",
-          maxWidth: "250px",
+          minWidth: "180px",
+          maxWidth: "180px",
           position: "fixed",
           backgroundColor: "white",
-          zIndex: "999",
+          zIndex: "10",
           rowGap: "1rem",
         }}
       >
-        {backOfficeLinks.map(({ link, name }, index) => (
-          <StyledButton
-            key={index}
-            variant="contained"
-            color="secondary"
-            onClick={() => {
-              router.push(link);
-            }}
-            disabled={router.pathname == link}
-            disableElevation
-          >
-            {name}
-          </StyledButton>
-        ))}
-
-        <StyledButton
-          variant="contained"
-          color="secondary"
-          onClick={() => {
-            alert("need logout");
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            columnGap: "0.6rem",
+            marginBottom: "0.5rem",
           }}
-          sx={{ marginTop: "auto" }}
-          disableElevation
         >
-          로그아웃
-        </StyledButton>
+          <Image
+            src="/marc_logo.png"
+            alt={"logo"}
+            width={30}
+            height={30}
+          ></Image>
+          <Typography variant="h2">MARC</Typography>
+        </div>
+        {Object.keys(backOfficeLinks).map((path: string, index) => (
+          <MenuButton
+            key={index}
+            path={path}
+            style={{ marginTop: path === "/logout" ? "auto" : "0" }}
+          />
+        ))}
       </StyledContainerOne>
-      <StyledContainerOne
+      <Container
         style={{
-          minWidth: "100vw",
-          minHeight: "100vh",
-          backgroundColor: "#eee",
-          height: "auto",
+          minWidth: "calc(100vw - 180px)",
+          height: "7rem",
+          position: "fixed",
+          backgroundColor: "#F2F2F2",
+          zIndex: "998",
 
           padding: "3rem",
+          marginLeft: "180px",
+          flexDirection: "row",
+          alignItems: "center",
+        }}
+      >
+        <Typography variant="h1">
+          {
+            backOfficeLinks[
+              Object.keys(backOfficeLinks).find((link) =>
+                pathname.includes(link)
+              ) as keyof typeof backOfficeLinks
+            ] // 흐음 바꿔야 할수도...
+          }
+        </Typography>
+        {pathname === "/reports/types" && <NewFormButton />}
+      </Container>
+      <StyledContainerOne
+        style={{
+          minWidth: "calc(100vw - 180px)",
+          minHeight: "100vh",
+          backgroundColor: "#F9F9F9",
+          height: "auto",
+
+          marginLeft: "180px",
+          padding: "3rem",
           rowGap: "1rem",
-          paddingLeft: "calc(250px + 3rem)",
+          paddingTop: "calc(7rem + 3rem)",
         }}
       >
         {children}
