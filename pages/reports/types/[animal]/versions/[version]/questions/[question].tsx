@@ -255,7 +255,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   try {
     const reportTypeVersionResponse = await axios.get(
-      `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/types/${selectedAnimal}/versions/${selectedVersion}`
+      `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/types/${selectedAnimal}/versions/${selectedVersion}`,
+      {
+        headers: {
+          Origin: `${process.env.NEXT_PUBLIC_FRONT_URL}`,
+        },
+      }
     );
     const question = await reportTypeVersionResponse.data.questions.find(
       (question: Question) => question.id.toString() === selectedQuestion

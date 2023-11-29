@@ -75,11 +75,14 @@ const MenuButton = ({
 
 export default function BackOfficeLayout({
   children,
+  title,
 }: {
   children: React.ReactNode;
+  title?: string;
 }) {
   const router = useRouter();
   const { pathname, query } = router;
+  console.log("layout", title);
 
   return (
     <div style={{ width: "100vw", height: "100vh" }}>
@@ -133,11 +136,13 @@ export default function BackOfficeLayout({
       >
         <Typography variant="h1">
           {
-            backOfficeLinks[
-              Object.keys(backOfficeLinks).find((link) =>
-                pathname.includes(link)
-              ) as keyof typeof backOfficeLinks
-            ] // 흐음 바꿔야 할수도...
+            title
+              ? title
+              : backOfficeLinks[
+                  Object.keys(backOfficeLinks).find((link) =>
+                    pathname.includes(link)
+                  ) as keyof typeof backOfficeLinks
+                ] // 흐음 바꿔야 할수도...
           }
         </Typography>
         {pathname === "/reports/types" && <NewFormButton />}

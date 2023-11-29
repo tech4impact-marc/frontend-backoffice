@@ -277,16 +277,23 @@ BackOfficeForm.getLayout = (page: ReactElement) => (
 );
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
+  const setOrigin = {
+    headers: {
+      Origin: `${process.env.NEXT_PUBLIC_FRONT_URL}`,
+    },
+  };
   const selectedAnimal = context.query.animal;
 
   try {
     const reportTypeResponse = await axios.get(
-      `${process.env.NEXT_PUBLIC_IP_ADDRESS}/reports/types/${selectedAnimal}`
+      `${process.env.NEXT_PUBLIC_IP_ADDRESS}/reports/types/${selectedAnimal}`,
+      setOrigin
     );
     const reportType: Animal = await reportTypeResponse.data;
 
     const reportTypeVersionResponse = await axios.get(
-      `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/types/${selectedAnimal}/versions` // admin용은 없어...
+      `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/types/${selectedAnimal}/versions`,
+      setOrigin
     );
     const reportTypeVersion = await reportTypeVersionResponse.data;
 
