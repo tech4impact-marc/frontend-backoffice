@@ -4,13 +4,22 @@ import { ThemeProvider } from "@emotion/react";
 import type { AppProps } from "next/app";
 
 import theme from "@/styles/theme";
+import { NextPage } from "next";
+import { ReactElement, ReactNode } from "react";
 
-export default function App({ Component, pageProps }: AppProps) {
+export type NextPageWithLayout = NextPage & {
+  getLayout?: (page: ReactElement) => ReactNode;
+};
+type AppPropsWithLayout = AppProps & {
+  Component: NextPageWithLayout;
+};
+
+export default function App({ Component, pageProps }: AppPropsWithLayout) {
+  const getLayout = Component.getLayout ?? ((page: ReactElement) => page);
+
   return (
     <ThemeProvider theme={theme}>
-      <BackOfficeLayout>
-        <Component {...pageProps} />
-      </BackOfficeLayout>
+      {getLayout(<Component {...pageProps} />)}
     </ThemeProvider>
   );
 }
