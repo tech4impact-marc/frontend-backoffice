@@ -57,8 +57,6 @@ export default function User() {
       params.user = userId;
     }
 
-    params.size = 10;
-
     try {
       const response = await axios.get(`http://3.37.177.6/api/admin/reports`, {
         params: params,
