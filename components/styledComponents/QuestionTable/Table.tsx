@@ -39,11 +39,6 @@ export const BasicDragQuestionsTable = ({
       (a, b) => a.questionOrder - b.questionOrder
     )
   );
-  if (!sortedQuestions) {
-    return <></>;
-  }
-
-  const localQuestionsOrder = sortedQuestions.map((question) => question.id);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -51,8 +46,13 @@ export const BasicDragQuestionsTable = ({
       coordinateGetter: sortableKeyboardCoordinates,
     })
   );
-
   const id = useId();
+
+  if (!sortedQuestions) {
+    return <></>;
+  }
+
+  const localQuestionsOrder = sortedQuestions.map((question) => question.id);
 
   return (
     <DndContext

@@ -13,8 +13,8 @@ interface AnswerTypeProps {
   published: boolean;
   question: Question;
   handleChangeOptions: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  handleNewOption: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  handleDeleteOption: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleNewOption: React.MouseEventHandler<HTMLButtonElement>;
+  handleDeleteOption: React.MouseEventHandler<HTMLButtonElement>;
 }
 
 const QuestionChoice = ({
@@ -61,6 +61,7 @@ const QuestionChoice = ({
               <StyledContainerThree
                 style={{
                   margin: "0",
+                  width: "50%",
                 }}
               >
                 <Typography variant="body1">보기 {index + 1}</Typography>

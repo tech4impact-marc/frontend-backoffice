@@ -26,6 +26,7 @@ const NewReportOverlay = ({
   setOpenBackdrop: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const [newAnimal, setNewAnimal] = useState<string>("");
+  const [thumbnailURL, setThumbnailURL] = useState<string>("");
 
   const router = useRouter();
   const { pathname } = router;
@@ -37,8 +38,9 @@ const NewReportOverlay = ({
       title: `${newAnimal} 설문지`,
       subtitle: `${newAnimal} 분포 및 서식 조사`,
       description: `${newAnimal} 서포터즈로 참여하신 여러분께 감사드립니다.\n 여러분의 관찰 기록을 바탕으로 제주 ${newAnimal}의 분포 및 생태를 파악하고, 보전자료로 활용하고자 합니다.`,
-      memo: ``,
+      thumbnailUrl: thumbnailURL, //https://drive.google.com/uc?id=id
     };
+    console.log(thumbnailURL);
     const initVersionData = {
       ...initData,
       questions: [
@@ -87,7 +89,10 @@ const NewReportOverlay = ({
         if (secondResponse.status === 200) {
           alert("설문이 추가되었습니다");
           setOpenBackdrop(false);
-          router.push(`${pathname}/${reportTypeId}`);
+          router
+            .push(`/reports/types/${reportTypeId}`)
+            .then(() => window.location.reload());
+          // window.location.reload();
         } else {
           console.error("버전 생성에 에러가 있었습니다:", secondResponse);
         }
@@ -117,14 +122,38 @@ const NewReportOverlay = ({
       <Divider />
       <StyledContainerZero>
         <FormControl fullWidth>
+          <Typography variant="body1">아이콘</Typography>
+
+          <TextField
+            variant="standard"
+            name={"thumbnailURL"}
+            placeholder="입력해주세요"
+            value={thumbnailURL}
+            onChange={(e) => {
+              setThumbnailURL(e.target.value);
+            }}
+          />
+        </FormControl>
+      </StyledContainerZero>
+
+      <StyledContainerZero>
+        <FormControl fullWidth>
+          <Typography variant="body1">리포트 이름</Typography>
+
           <TextField
             variant="standard"
             name={"title"}
-            label="동물 이름"
+            placeholder="입력해주세요"
             value={newAnimal}
             onChange={(e) => {
               setNewAnimal(e.target.value);
             }}
+            InputProps={{
+              endAdornment: (
+                <Typography width={"4rem"}>{newAnimal.length} / 20</Typography>
+              ),
+            }}
+            inputProps={{ maxLength: 20 }}
           />
         </FormControl>
       </StyledContainerZero>

@@ -1,6 +1,13 @@
-import { Button, ButtonTypeMap, Typography, styled } from "@mui/material";
+import {
+  ButtonTypeMap,
+  Select,
+  TextField,
+  Typography,
+  styled,
+} from "@mui/material";
 import { useRouter } from "next/router";
 import React from "react";
+import Button, { ButtonProps } from "@mui/material/Button";
 
 import CircleOutlinedIcon from "@mui/icons-material/CircleOutlined";
 import { StyledContainerOne } from "@/components/styledComponents/StyledContainer";
@@ -15,36 +22,23 @@ const backOfficeLinks = {
   "/logout": "로그아웃",
 };
 
-export const StyledButton = ({
-  onClick,
-  children,
-  sx,
-  disabled,
-  color,
-  name,
-}: {
-  onClick: any;
-  children: React.ReactNode;
-  sx?: React.CSSProperties;
-  disabled?: boolean;
-  color?: ButtonTypeMap["props"]["color"];
-  name?: string;
-}) => {
+export const StyledButton = (props: ButtonProps) => {
   return (
     <Button
-      variant="contained"
+      variant={props.variant ? props.variant : "contained"}
       sx={{
         padding: "0.7rem 2rem",
         borderRadius: "0.5rem",
-        ...sx,
+        ...props.sx,
       }}
-      onClick={onClick}
-      disabled={disabled}
-      color={color ? color : "primary"}
-      name={name}
+      onClick={props.onClick}
+      disabled={props.disabled}
+      color={props.color ? props.color : "primary"}
+      name={props.name}
+      startIcon={props.startIcon}
       disableElevation
     >
-      {children}
+      {props.children}
     </Button>
   );
 };
@@ -146,7 +140,7 @@ export default function BackOfficeLayout({
             ] // 흐음 바꿔야 할수도...
           }
         </Typography>
-        {pathname.includes("/report") && <NewFormButton />}
+        {pathname === "/reports/types" && <NewFormButton />}
       </Container>
       <StyledContainerOne
         style={{
