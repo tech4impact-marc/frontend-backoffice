@@ -4,38 +4,26 @@ import { createTheme, responsiveFontSizes } from "@mui/material/styles";
 let theme = createTheme({
   palette: {
     secondary: {
-      main: "#333",
-      light: "#efefef",
-      dark: "#000",
-      contrastText: "#fff",
+      main: "#F2F2F2",
+      light: "#ffffff",
+      dark: "#BDBDBD",
     },
-    info: {
-      main: "#9AA8BF",
-      light: "#efefef",
-      dark: "#889",
-      contrastText: "#fff",
-    },
-    // secondary: {
-    //   main: "#F2F2F2",
-    //   light: "#ffffff",
-    //   dark: "#BDBDBD",
-    // },
   },
   typography: {
     button: {
-      fontSize: "0.875rem",
+      fontSize: "0.8rem",
       fontWeight: 700,
     },
     h1: {
-      fontSize: "2rem",
+      fontSize: "1.6rem",
       fontWeight: 600,
     },
     h2: {
-      fontSize: "1.25rem",
+      fontSize: "1.2rem",
       fontWeight: 600,
     },
     h3: {
-      fontSize: "1.125rem",
+      fontSize: "0.9rem",
       fontWeight: 600,
     },
     body1: {
@@ -63,27 +51,6 @@ let theme = createTheme({
         },
         track: {
           borderRadius: "10rem",
-        },
-      },
-    },
-    MuiInputBase: {
-      styleOverrides: {
-        root: {
-          height: "2rem !important",
-        },
-      },
-    },
-    MuiSelect: {
-      styleOverrides: {
-        select: {
-          padding: "0.4rem 0",
-        },
-      },
-    },
-    MuiTextField: {
-      styleOverrides: {
-        root: {
-          height: "2rem !important",
         },
       },
     },
