@@ -66,6 +66,27 @@ let theme = createTheme({
         },
       },
     },
+    MuiInputBase: {
+      styleOverrides: {
+        root: {
+          height: "2rem !important",
+        },
+      },
+    },
+    MuiSelect: {
+      styleOverrides: {
+        select: {
+          padding: "0.4rem 0",
+        },
+      },
+    },
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          height: "2rem !important",
+        },
+      },
+    },
   },
 });
 

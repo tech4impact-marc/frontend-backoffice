@@ -61,6 +61,7 @@ const QuestionChoice = ({
               <StyledContainerThree
                 style={{
                   margin: "0",
+                  width: "50%",
                 }}
               >
                 <Typography variant="body1">보기 {index + 1}</Typography>

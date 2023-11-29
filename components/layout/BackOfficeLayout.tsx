@@ -1,4 +1,11 @@
-import { Button, ButtonTypeMap, Typography, styled } from "@mui/material";
+import {
+  Button,
+  ButtonTypeMap,
+  Select,
+  TextField,
+  Typography,
+  styled,
+} from "@mui/material";
 import { useRouter } from "next/router";
 import React from "react";
 
@@ -22,17 +29,21 @@ export const StyledButton = ({
   disabled,
   color,
   name,
+  variant,
+  startIcon,
 }: {
-  onClick: any;
-  children: React.ReactNode;
+  onClick?: any;
+  children?: React.ReactNode;
   sx?: React.CSSProperties;
   disabled?: boolean;
   color?: ButtonTypeMap["props"]["color"];
   name?: string;
+  variant?: ButtonTypeMap["props"]["variant"];
+  startIcon?: ButtonTypeMap["props"]["startIcon"];
 }) => {
   return (
     <Button
-      variant="contained"
+      variant={variant ? variant : "contained"}
       sx={{
         padding: "0.7rem 2rem",
         borderRadius: "0.5rem",
@@ -42,6 +53,7 @@ export const StyledButton = ({
       disabled={disabled}
       color={color ? color : "primary"}
       name={name}
+      startIcon={startIcon}
       disableElevation
     >
       {children}
@@ -146,7 +158,7 @@ export default function BackOfficeLayout({
             ] // 흐음 바꿔야 할수도...
           }
         </Typography>
-        {pathname.includes("/report") && <NewFormButton />}
+        {pathname === "/reports/types" && <NewFormButton />}
       </Container>
       <StyledContainerOne
         style={{

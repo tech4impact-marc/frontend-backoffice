@@ -1,11 +1,8 @@
 import axios from "axios";
 import { GetServerSideProps } from "next";
-import {
-  ReportTypeSimpleResponseDto,
-  ReportTypeVersionSimpleResponseDto,
-} from "../..";
+import { ReportTypeVersionSimpleResponseDto } from "../..";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   StyledContainerOne,
   StyledContainerThree,
@@ -14,9 +11,37 @@ import {
 import { Tab, Tabs, TextField, Typography, styled } from "@mui/material";
 import { StyledButton } from "@/components/layout/BackOfficeLayout";
 import theme from "@/styles/theme";
-import { BasicDragQuestionsTable } from "@/components/styledComponents/dragTable/Table";
+import { BasicDragQuestionsTable } from "@/components/styledComponents/QuestionTable/Table";
 import { error } from "console";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import {
+  DownloadCSV,
+  ReportResponseTable,
+  responseToCsvData,
+} from "@/components/styledComponents/ReportResponseTable";
+
+interface ReportDto {
+  id: number;
+  createdDateTime: Date;
+  modifiedDateTime: Date;
+  question: {
+    id?: number;
+    title?: string | null;
+    questionOrder: number;
+    type?: string;
+  };
+  isMain: boolean;
+}
+
+export interface ReportResponseDto {
+  totalNumberOfPages: 0;
+  totalNumberOfElements: 0;
+  first: true;
+  last: true;
+  isEmpty: true;
+  numberOfElements: 0;
+  contents: ReportDto[];
+}
 
 interface StyledTabsProps {
   children?: React.ReactNode;
@@ -86,10 +111,20 @@ const StyledTab = styled((props: StyledTabProps) => (
 
 const ReportVersion = ({
   reportTypeVersion,
+  reports,
 }: {
   reportTypeVersion: ReportTypeVersionSimpleResponseDto;
+  reports: ReportResponseDto;
 }) => {
-  console.log(reportTypeVersion);
+  if (!reportTypeVersion || !reports) {
+    return <React.Fragment></React.Fragment>;
+  }
+
+  const { data: csvData, headers: csvHeaders } = useMemo(
+    () => responseToCsvData(reportTypeVersion.questions, reports.contents),
+    []
+  );
+
   const router = useRouter();
   const { pathname, query } = router;
 
@@ -99,40 +134,26 @@ const ReportVersion = ({
   };
 
   const handlePublish = async () => {
-    axios
-      .post(
+    try {
+      const publishResponse = await axios.post(
         `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/types/${query.animal}/versions/${query.version}/publish`
-      )
-      .then((response) => {
-        if (response.status !== 200) {
-          alert("오류가 있었습니다.");
-        } else {
-          alert("성공적으로 배포되었습니다.");
+      );
+      if (publishResponse.status === 200) {
+        const copyResponse = await axios.post(
+          `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/types/${query.animal}/versions/${query.version}/duplicate`
+        );
+        if (copyResponse.status === 200) {
+          alert("성공적으로 배포했습니다.");
           window.location.reload();
-        }
-      })
-      .catch((error) => {
-        alert("오류가 있었습니다.");
-      });
-  };
-
-  const handleCopy = async () => {
-    axios
-      .post(
-        `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/types/${query.animal}/versions/${query.version}/duplicate`
-      )
-      .then((response) => {
-        console.log(response);
-        if (response.status !== 200) {
-          alert("오류가 있었습니다.");
         } else {
-          alert("성공적으로 복제되었습니다.");
-          window.location.reload();
+          console.log("오류가 있었습니다.");
         }
-      })
-      .catch((error) => {
-        alert("오류가 있었습니다.");
-      });
+      } else {
+        console.log("오류가 있었습니다.");
+      }
+    } catch (error) {
+      console.log("오류가 있었습니다.");
+    }
   };
 
   const handleNewOrder = ({
@@ -140,7 +161,6 @@ const ReportVersion = ({
   }: {
     data: { type: string; orders: number[] };
   }) => {
-    console.log("data:", data);
     axios
       .put(
         `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/types/${query.animal}/versions/${query.version}/questions/order`,
@@ -159,18 +179,18 @@ const ReportVersion = ({
   };
 
   const handleNewQuestion = () => {
+    const questionOrder =
+      Math.max(
+        ...reportTypeVersion.questions.map((question) => question.questionOrder)
+      ) + 1;
+
     const initQuestion = {
       type: "MULTIPLE_CHOICE(SINGLE)",
       required: false,
       isMain: false,
-      questionOrder:
-        Math.max(
-          ...reportTypeVersion.questions.map(
-            (question) => question.questionOrder
-          )
-        ) + 1,
-      title: "질문 제목",
-      description: "질문 설명",
+      questionOrder: questionOrder,
+      title: `질문 ${questionOrder} 제목`,
+      description: `질문 ${questionOrder} 설명`,
     };
     axios
       .post(
@@ -208,24 +228,26 @@ const ReportVersion = ({
         <StyledDivHeader>
           <Typography variant="h2">리포트 버전 정보</Typography>
           <StyledButton
-            onClick={reportTypeVersion.published ? handleCopy : handlePublish}
+            onClick={handlePublish}
             sx={{ marginLeft: "auto" }}
+            disabled={reportTypeVersion.published}
           >
-            {reportTypeVersion.published ? "복제하기" : "배포하기"}
+            {/* {reportTypeVersion.published ? "복제하기" : "배포하기"} */}
+            배포하기
           </StyledButton>
         </StyledDivHeader>
 
-        <div style={{ display: "flex", width: "100%", columnGap: "1rem" }}>
-          <StyledContainerThree style={{ flex: "1" }}>
-            <Typography variant="body1">버전</Typography>
-            <TextField
-              variant="standard"
-              name={"title"}
-              value={`V${reportTypeVersion.versionNumber}`}
-              disabled
-            />
-          </StyledContainerThree>
-          <StyledContainerThree style={{ flex: "5" }}>
+        {/* <div style={{ display: "flex", width: "100%", columnGap: "1rem" }}> */}
+        <StyledContainerThree style={{ flex: "1" }}>
+          <Typography variant="body1">버전</Typography>
+          <TextField
+            variant="standard"
+            name={"title"}
+            value={`V${reportTypeVersion.versionNumber}`}
+            disabled
+          />
+        </StyledContainerThree>
+        {/* <StyledContainerThree style={{ flex: "5" }}>
             <Typography variant="body1">메모</Typography>
             <TextField
               variant="standard"
@@ -234,13 +256,13 @@ const ReportVersion = ({
               disabled
             />
           </StyledContainerThree>
-        </div>
+        </div> */}
       </StyledContainerOne>
 
       <StyledContainerOne style={{ padding: "0" }}>
         <StyledTabs value={tab} onChange={handleTabChange}>
           <StyledTab label="질문" />
-          <StyledTab label="응답" />
+          {reportTypeVersion.published && <StyledTab label="응답" />}
         </StyledTabs>
       </StyledContainerOne>
       {tab == 0 && (
@@ -269,6 +291,22 @@ const ReportVersion = ({
           />
         </StyledContainerOne>
       )}
+      {tab == 1 && reportTypeVersion.published && (
+        <StyledContainerOne
+          style={{
+            backgroundColor: "white",
+            rowGap: "1.5rem",
+            height: "auto",
+            justifyContent: "start",
+          }}
+        >
+          <StyledDivHeader>
+            <Typography variant="h2">전체 응답</Typography>
+            <DownloadCSV csvHeaders={csvHeaders} csvData={csvData} />
+          </StyledDivHeader>
+          <ReportResponseTable csvHeaders={csvHeaders} csvData={csvData} />
+        </StyledContainerOne>
+      )}
     </React.Fragment>
   );
 };
@@ -284,7 +322,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     );
     const reportTypeVersion = await reportTypeVersionResponse.data;
 
-    return { props: { reportTypeVersion } };
+    const reportsResponse = await axios.get(
+      `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/full?reportType=${selectedAnimal}&reportTypeVersion=${selectedVersion}`
+    );
+    const reports = await reportsResponse.data;
+
+    return { props: { reportTypeVersion, reports } };
   } catch {
     console.log("There was an error");
   }

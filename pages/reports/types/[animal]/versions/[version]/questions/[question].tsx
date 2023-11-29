@@ -5,6 +5,7 @@ import {
   InputLabel,
   MenuItem,
   Select,
+  Switch,
   TextField,
   Typography,
 } from "@mui/material";
@@ -34,7 +35,8 @@ export const types = {
   "MULTIPLE_CHOICE(MULTI)": "복수 응답",
   DATETIME: "날짜/시간",
   LOCATION: "장소",
-  FILE: "이미지",
+  FILE: "파일",
+  IMAGE: "이미지",
 };
 
 const BackOfficeForm = ({
@@ -133,6 +135,10 @@ const BackOfficeForm = ({
       });
   };
 
+  if (!localQuestion) {
+    return <React.Fragment></React.Fragment>;
+  }
+
   return (
     <StyledContainerOne
       style={{
@@ -153,7 +159,42 @@ const BackOfficeForm = ({
         </StyledButton>
       </StyledDivHeader>
 
+      <StyledDivHeader style={{ gap: "2rem" }}>
+        <Typography variant="button">필수 질문</Typography>
+        <Switch
+          checked={localQuestion.required}
+          name={"required"}
+          onClick={() => {
+            setLocalQuestion((prevLocalQuestion) => ({
+              ...prevLocalQuestion,
+              required: !localQuestion.required,
+            }));
+            setUpdates(1);
+          }}
+          disabled={published || localQuestion.isMain}
+        />
+      </StyledDivHeader>
+
       <div style={{ display: "flex", width: "100%", columnGap: "1rem" }}>
+        <StyledContainerThree style={{ flex: "4" }}>
+          <Typography variant="body1">질문 타입</Typography>
+          <FormControl variant="standard">
+            <Select
+              name="type"
+              value={localQuestion.type}
+              onChange={handleChange}
+              label="Age"
+              disabled={published || localQuestion.isMain}
+            >
+              {Object.keys(types).map((type, index) => (
+                <MenuItem key={index} value={type}>
+                  {types[type as keyof typeof types]}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </StyledContainerThree>
+
         <StyledContainerThree style={{ flex: "4" }}>
           <Typography variant="body1">질문 제목</Typography>
           <TextField
@@ -161,54 +202,35 @@ const BackOfficeForm = ({
             name={"title"}
             value={localQuestion.title}
             onChange={handleChange}
-            disabled={published}
+            disabled={published || localQuestion.isMain}
           />
-        </StyledContainerThree>
-        <StyledContainerThree style={{ flex: "4" }}>
-          <Typography variant="body1">질문 설명</Typography>
-          <TextField
-            variant="standard"
-            name={"description"}
-            value={localQuestion.description}
-            onChange={handleChange}
-            disabled={published}
-          />
-        </StyledContainerThree>
-        <StyledContainerThree style={{ flex: "2" }}>
-          <Typography variant="body1">필수 질문</Typography>
-          {/* <TextField
-            variant="standard"
-            name={"description"}
-            value={localQuestion.description}
-            onChange={handleChange}
-          /> */}
         </StyledContainerThree>
       </div>
       <StyledDivHeader>
         <Typography variant="h2">질문 타입</Typography>
       </StyledDivHeader>
-
-      <FormControl variant="standard" sx={{ width: "50%" }}>
-        <Select
-          name="type"
-          value={localQuestion.type}
+      <StyledContainerThree style={{ width: "100%" }}>
+        <Typography variant="body1">질문 설명</Typography>
+        <TextField
+          variant="standard"
+          name={"description"}
+          value={localQuestion.description}
           onChange={handleChange}
-          label="Age"
-          sx={{ height: "3rem", background: "none" }}
-          disabled={published}
-        >
-          {Object.keys(types).map((type, index) => (
-            <MenuItem key={index} value={type}>
-              {types[type as keyof typeof types]}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+          disabled={published || localQuestion.isMain}
+          // sx={{ height: "4rem !important" }}
+          // InputProps={{
+          //   style: {
+          //     height: "4rem !important",
+          //   },
+          // }}
+          // rows={2}
+          // multiline
+        />
+      </StyledContainerThree>
 
       <StyledDivHeader>
         <Typography variant="h2">질문 내용</Typography>
       </StyledDivHeader>
-
       <QuestionChoice
         published={published}
         question={localQuestion}
