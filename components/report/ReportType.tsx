@@ -8,7 +8,7 @@ import {
   StyledContainerOne,
   StyledContainerThree,
 } from "@/components/styledComponents/StyledContainer";
-import { ReportTypeSimpleResponseDto } from "@/pages/reports/types/[animal]";
+import { ReportTypeSimpleResponseDto } from "@/pages/report/[animal]";
 
 interface ReportTypeProps {
   selectedAnimal: number;
