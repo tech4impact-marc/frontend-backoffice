@@ -31,6 +31,7 @@ import { responseToCsvData } from "@/components/styledComponents/ReportResponseT
 import { useRouter } from "next/router";
 
 export interface SpecificReportResponseDto {
+  id: number;
   answers: AnswerType[];
   createdDateTime: Date;
   reportTypeVersion: { id: number; reportType: { id: number; title: string } };
@@ -122,7 +123,7 @@ const Post = ({
 
     axios
       .patch(
-        `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/${router.query.post}/answers`,
+        `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/${report.id}/answers`,
         formData,
         {
           headers: {
