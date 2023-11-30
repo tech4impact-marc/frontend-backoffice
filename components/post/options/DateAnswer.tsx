@@ -19,7 +19,6 @@ interface DateAnswerProps {
 
 const DateAnswer: React.FC<DateAnswerProps> = React.memo(
   ({ currentAnswer, updateAnswers }) => {
-    console.log(currentAnswer);
     return (
       <FormControl fullWidth>
         <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="ko">

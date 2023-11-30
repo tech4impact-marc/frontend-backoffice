@@ -14,7 +14,7 @@ import {
   StyledDivHeader,
 } from "@/components/styledComponents/StyledContainer";
 import Image from "next/image";
-import { BasicTable } from "@/components/styledComponents/StyledTable2";
+import { BasicTable } from "@/components/styledComponents/ReportVersionTable";
 import { GetServerSideProps } from "next";
 import { Animal } from "..";
 

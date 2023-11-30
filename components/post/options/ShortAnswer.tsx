@@ -26,7 +26,7 @@ export const ShortAnswer: React.FC<ShortAnswerProps> = ({
       <TextField
         placeholder="입력해주세요"
         variant="standard"
-        value={currentAnswer.value}
+        value={currentAnswer.value ? currentAnswer.value : ""} //null issue
         onChange={handleTextChange}
         inputProps={{
           "aria-label": "weight",

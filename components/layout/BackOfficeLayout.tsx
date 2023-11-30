@@ -22,6 +22,11 @@ const backOfficeLinks = {
   "/auth/logout": "로그아웃",
 };
 
+const backOfficeHeaderLinks = {
+  ...backOfficeLinks,
+  "/post": "포스트관리",
+};
+
 export const StyledButton = (props: ButtonProps) => {
   return (
     <Button
@@ -138,10 +143,10 @@ export default function BackOfficeLayout({
           {
             title
               ? title
-              : backOfficeLinks[
-                  Object.keys(backOfficeLinks).find((link) =>
+              : backOfficeHeaderLinks[
+                  Object.keys(backOfficeHeaderLinks).find((link) =>
                     pathname.includes(link)
-                  ) as keyof typeof backOfficeLinks
+                  ) as keyof typeof backOfficeHeaderLinks
                 ] // 흐음 바꿔야 할수도...
           }
         </Typography>

@@ -230,37 +230,17 @@ const ReportVersion = ({
         }}
       >
         <StyledDivHeader>
-          <Typography variant="h2">리포트 버전 정보</Typography>
+          <Typography variant="h2">
+            리포트 버전 {reportTypeVersion.versionNumber}
+          </Typography>
           <StyledButton
             onClick={handlePublish}
             sx={{ marginLeft: "auto" }}
             disabled={reportTypeVersion.published}
           >
-            {/* {reportTypeVersion.published ? "복제하기" : "배포하기"} */}
             배포하기
           </StyledButton>
         </StyledDivHeader>
-
-        {/* <div style={{ display: "flex", width: "100%", columnGap: "1rem" }}> */}
-        <StyledContainerThree style={{ flex: "1" }}>
-          <Typography variant="body1">버전</Typography>
-          <TextField
-            variant="standard"
-            name={"title"}
-            value={`V${reportTypeVersion.versionNumber}`}
-            disabled
-          />
-        </StyledContainerThree>
-        {/* <StyledContainerThree style={{ flex: "5" }}>
-            <Typography variant="body1">메모</Typography>
-            <TextField
-              variant="standard"
-              name={"subtitle"}
-              value={"MEMO가 없다..?"}
-              disabled
-            />
-          </StyledContainerThree>
-        </div> */}
       </StyledContainerOne>
 
       <StyledContainerOne style={{ padding: "0" }}>

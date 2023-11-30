@@ -25,17 +25,17 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
   const getLayout = Component.getLayout ?? ((page: ReactElement) => page);
   const router = useRouter();
 
-  useEffect(() => {
-    refreshAccessToken();
-    if (router.pathname !== "/" && !router.pathname.includes("auth")) {
-      if (verifyRole()) {
-        console.log("Admin state.");
-      } else {
-        console.log("NOT Admin state.");
-        router.push("/");
-      }
-    }
-  }, [Component, pageProps, router]);
+  // useEffect(() => {
+  //   refreshAccessToken();
+  //   if (router.pathname !== "/" && !router.pathname.includes("auth")) {
+  //     if (verifyRole()) {
+  //       console.log("Admin state.");
+  //     } else {
+  //       console.log("NOT Admin state.");
+  //       router.push("/");
+  //     }
+  //   }
+  // }, [Component, pageProps, router]);
 
   return (
     <Provider store={store}>

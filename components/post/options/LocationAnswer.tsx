@@ -46,8 +46,9 @@ export const LocationAnswer: React.FC<LocationAnswerProps> = ({
           <Typography variant="subtitle1">위치</Typography>
           <TextField
             variant="standard"
-            // label="위치"
-            value={currentAnswer.value.address}
+            value={
+              currentAnswer.value.address ? currentAnswer.value.address : ""
+            } //null issue
             name="address"
             onChange={handleTextChange}
             fullWidth
@@ -58,8 +59,11 @@ export const LocationAnswer: React.FC<LocationAnswerProps> = ({
           <Typography variant="subtitle1">상세 위치</Typography>
           <TextField
             variant="standard"
-            // label="상세 위치"
-            value={currentAnswer.value.addressDetail}
+            value={
+              currentAnswer.value.addressDetail
+                ? currentAnswer.value.addressDetail
+                : ""
+            } //null issue
             name="addressDetail"
             onChange={handleTextChange}
             fullWidth

@@ -11,9 +11,11 @@ import {
   DataGrid,
   GridActionsCellItem,
   GridColDef,
+  GridEventListener,
   GridRowId,
   GridRowModes,
   GridRowModesModel,
+  GridRowParams,
   useGridApiContext,
   useGridApiRef,
 } from "@mui/x-data-grid";
@@ -35,6 +37,7 @@ export const ReportResponseTable = ({
     {}
   );
   const apiRef = useGridApiRef();
+  const router = useRouter();
 
   const handleDeleteClick = (id: GridRowId) => () => {
     if (!parsedData.find((row) => row.id !== id)) {
@@ -87,7 +90,6 @@ export const ReportResponseTable = ({
         headerName: header.label,
         type: header.type,
         minWidth: 200,
-        editable: true,
       }))
   );
 
@@ -97,17 +99,32 @@ export const ReportResponseTable = ({
     }))
   );
 
+  const handleRowClick: GridEventListener<"rowClick"> = (
+    params: GridRowParams
+  ) => {
+    router.push(`/posts/${params.row.id}`);
+  };
+
   // return <></>;
   return (
     <Box sx={{ width: "100%" }}>
       <DataGrid
-        editMode="row"
         columns={parsedHeaders}
         rows={parsedData}
-        sx={{ overflow: "scroll", minWidth: "100%" }}
+        sx={{
+          overflow: "scroll",
+          minWidth: "100%",
+          ".MuiDataGrid-cell:focus": {
+            outline: "none",
+          },
+          "& .MuiDataGrid-row:hover": {
+            cursor: "pointer",
+          },
+        }}
         rowModesModel={rowModesModel}
         apiRef={apiRef}
         getRowId={(row) => row.id}
+        onRowClick={handleRowClick}
       />
     </Box>
   );
