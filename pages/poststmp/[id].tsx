@@ -8,10 +8,6 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import axios from "axios";
 
-//import dataResponse from "@/pages/user/contents";
-
-const columns: string[] = ["리포트 ID", "리포트 타입", "게시 일자"];
-
 export default function User() {
   const router = useRouter();
   const { id } = router.query;
@@ -20,12 +16,12 @@ export default function User() {
     postId: 0,
     reportType: "리포트 타입",
     postDate: "게시일자",
-    title: "포스트 제목",
-    value: "포스트 내용",
+    title: "",
+    value: "",
   });
   const [prevPost, setPrevPost] = useState({
-    title: "포스트 제목",
-    value: "포스트 내용",
+    title: "",
+    value: "",
   });
 
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -47,8 +43,9 @@ export default function User() {
       const updatedPostInfo = {
         title: postInfo.title,
         value: postInfo.value,
-        modifiedReason: "",
+        modifiedReason: "a",
       };
+      console.log(updatedPostInfo, postInfo.postId);
       const response = await axios.patch(
         `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/posts/${postInfo.postId}`,
         updatedPostInfo
@@ -67,30 +64,39 @@ export default function User() {
       console.log("에러 발생: ", error);
     }
   };
+
   useEffect(() => {
     if (!id) {
       return;
     }
+
     const fetchData = async () => {
       try {
         const response = await axios.get(
           `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/${id}`
         );
-        console.log(id);
-        console.log(response.data, response.data.post.title);
         const reportData = response.data;
-        setPostInfo({
+        setPostInfo((prevPostInfo) => ({
+          ...prevPostInfo,
           postId: reportData.post.id,
           reportType: reportData.reportTypeVersion.reportType.label,
           postDate: reportData.createdDateTime,
-          title: reportData.post.title,
-          value: reportData.post.value,
-        });
+        }));
+
+        const response2 = await axios.get(
+          `${process.env.NEXT_PUBLIC_IP_ADDRESS}/posts/${reportData.post.id}`
+        );
+        const reportData2 = response2.data;
+        setPostInfo((prevPostInfo) => ({
+          ...prevPostInfo,
+          title: reportData2.title,
+          value: reportData2.value,
+        }));
+
         setPrevPost({
-          title: reportData.post.title,
-          value: reportData.post.value,
+          title: reportData2.title,
+          value: reportData2.value,
         });
-        console.log(postInfo, prevPost);
       } catch (error) {
         console.log("에러 발생: ", error);
       }
