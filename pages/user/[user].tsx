@@ -17,7 +17,7 @@ import axios from "axios";
 
 //import dataResponse from "@/pages/user/contents";
 
-const columns: string[] = ["리포트 ID", "리포트 타입", "게시 일자"];
+const columns: string[] = ["포스트 ID", "리포트 타입", "게시 일자"];
 
 export default function User() {
   const router = useRouter();
@@ -61,7 +61,7 @@ export default function User() {
       );
       const dataResponse = response.data;
       const newRows = dataResponse.contents.map((report: any) => ({
-        "리포트 ID": report.id,
+        "포스트 ID": report.post.id,
         "리포트 타입": report.reportTypeVersion.reportType.label,
         "게시 일자": report.createdDateTime,
       }));
