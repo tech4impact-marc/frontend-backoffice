@@ -7,13 +7,14 @@ import { store } from "@/redux/store";
 export default function LoginRedirectPage() {
   const router = useRouter();
   const [ex, setEx] = useState(true);
+  const state = store.getState();
 
   useEffect(() => {
     async function login() {
       try {
         const response = await axios.post(
           `${process.env.NEXT_PUBLIC_IP_ADDRESS}/auth/kakao/login/done`,
-          {},
+          state.loginState,
           {
             headers: {
               "Content-Type": "application/json",
