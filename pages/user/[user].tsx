@@ -53,9 +53,12 @@ export default function User() {
     }
 
     try {
-      const response = await axios.get(`http://3.37.177.6/api/admin/reports`, {
-        params: params,
-      });
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports`,
+        {
+          params: params,
+        }
+      );
       const dataResponse = response.data;
       const newRows = dataResponse.contents.map((report: any) => ({
         "리포트 ID": report.id,
@@ -176,8 +179,6 @@ export default function User() {
     }
     fetchReport(currentPage, userInfo.userId);
   }, [currentPage, userInfo.userId]);
-
-  console.log(userInfo, prevUserInfo);
 
   return (
     <React.Fragment>
