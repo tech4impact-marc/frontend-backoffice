@@ -10,7 +10,7 @@ import axios from "axios";
 
 export default function User() {
   const router = useRouter();
-  const { id } = router.query;
+  const { id } = router.query; // post id!
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [postInfo, setPostInfo] = useState({
     postId: 0,
@@ -23,6 +23,7 @@ export default function User() {
     title: "",
     value: "",
   });
+  const [reportId, setReportId] = useState(0);
 
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPostInfo({
@@ -73,30 +74,31 @@ export default function User() {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/${id}`
+          `${process.env.NEXT_PUBLIC_IP_ADDRESS}/posts/${id}`
         );
-        const reportData = response.data;
+        const postData = response.data;
+        console.log(postData);
         setPostInfo((prevPostInfo) => ({
           ...prevPostInfo,
-          postId: reportData.post.id,
-          reportType: reportData.reportTypeVersion.reportType.label,
-          postDate: reportData.createdDateTime,
+          postId: postData.id,
+          postDate: postData.createdDateTime,
+          title: postData.title,
+          value: postData.value,
         }));
+        setPrevPost({
+          title: postData.title,
+          value: postData.value,
+        });
+        setReportId(postData.reportId);
 
         const response2 = await axios.get(
-          `${process.env.NEXT_PUBLIC_IP_ADDRESS}/posts/${reportData.post.id}`
+          `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/${postData.reportId}`
         );
-        const reportData2 = response2.data;
+        const reportData = response2.data;
         setPostInfo((prevPostInfo) => ({
           ...prevPostInfo,
-          title: reportData2.title,
-          value: reportData2.value,
+          reportType: reportData.reportTypeVersion.reportType.label,
         }));
-
-        setPrevPost({
-          title: reportData2.title,
-          value: reportData2.value,
-        });
       } catch (error) {
         console.log("에러 발생: ", error);
       }
