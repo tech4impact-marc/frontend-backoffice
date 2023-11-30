@@ -55,7 +55,7 @@ const Post = ({
 
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [postInfo, setPostInfo] = useState({
-    postId: report?.post?.id,
+    postId: post?.id,
     reportType: report?.reportTypeVersion?.reportType?.title,
     postDate: report?.createdDateTime,
     title: post?.title,
@@ -81,7 +81,7 @@ const Post = ({
       const updatedPostInfo = {
         title: postInfo.title,
         value: postInfo.value,
-        modifiedReason: "",
+        modifiedReason: postInfo.modifiedReason,
       };
       const response = await axios.patch(
         `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/posts/${postInfo.postId}`,
@@ -102,7 +102,6 @@ const Post = ({
 
   const handleModifyReport = () => {
     console.log(answers.flat().filter((answer) => answer.modified === true));
-    console.log(typeof router.query.post, typeof reportTypeVersion.id);
     formData.append(
       "data",
       JSON.stringify({
@@ -409,8 +408,14 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 
   try {
+    const postResponse = await axios.get(
+      `${process.env.NEXT_PUBLIC_IP_ADDRESS}/posts/${context.query.post}`,
+      setOrigin
+    );
+    const post = await postResponse.data;
+
     const reportResponse = await axios.get(
-      `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/${context.query.post}`,
+      `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/${post.reportId}`,
       setOrigin
     );
     const report: SpecificReportResponseDto = await reportResponse.data;
@@ -420,12 +425,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       setOrigin
     );
     const reportTypeVersion = await reportTypeVersionResponse.data;
-
-    const postResponse = await axios.get(
-      `${process.env.NEXT_PUBLIC_IP_ADDRESS}/posts/${report.post.id}`,
-      setOrigin
-    );
-    const post = await postResponse.data;
 
     return { props: { report, reportTypeVersion, post } };
   } catch (error) {
