@@ -4,6 +4,7 @@ import { Pagination, IconButton, TextField, Container } from "@mui/material";
 import React, { ReactElement, useEffect, useState } from "react";
 import axios from "axios";
 import BackOfficeLayout from "@/components/layout/BackOfficeLayout";
+import { StyledDivHeader } from "@/components/styledComponents/StyledContainer";
 
 const columns: string[] = ["유저 ID", "닉네임", "이메일", "전화번호", "Signup"];
 
@@ -84,7 +85,7 @@ export default function AllUsers() {
           gap: "16px",
         }}
       >
-        <Container sx={{ flexDirection: "row" }}>
+        <StyledDivHeader sx={{ flexDirection: "row" }}>
           <TextField
             variant="standard"
             value={searchValue}
@@ -107,9 +108,10 @@ export default function AllUsers() {
             onChange={handlePageChange}
             sx={{
               marginLeft: "auto",
+              flexShrink: "0",
             }}
           />
-        </Container>
+        </StyledDivHeader>
         <StickyHeadTableUser1 columns={columns} rows={rows} />
       </Container>
     </React.Fragment>

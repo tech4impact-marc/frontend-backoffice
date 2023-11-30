@@ -1,7 +1,9 @@
 import { Container, Typography } from "@mui/material";
 import Image from "next/image";
 import marc_logo from "@/public/marc_logo.png";
-import { StyledButton } from "@/components/layout/BackOfficeLayout";
+import BackOfficeLayout, {
+  StyledButton,
+} from "@/components/layout/BackOfficeLayout";
 import { store } from "@/redux/store";
 import { ReactElement } from "react";
 
@@ -74,4 +76,6 @@ const Home = () => {
 
 export default Home;
 
-Home.getLayout = (page: ReactElement) => <>{page}</>;
+Home.getLayout = (page: ReactElement) => (
+  <BackOfficeLayout>{page}</BackOfficeLayout>
+);

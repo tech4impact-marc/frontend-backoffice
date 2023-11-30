@@ -31,8 +31,10 @@ import { responseToCsvData } from "@/components/styledComponents/ReportResponseT
 import { useRouter } from "next/router";
 
 export interface SpecificReportResponseDto {
+  id: number;
   answers: AnswerType[];
-  reportTypeVersion: { id: number; reportType: { id: number } };
+  createdDateTime: Date;
+  reportTypeVersion: { id: number; reportType: { id: number; title: string } };
   post: { id: number };
 }
 
@@ -53,11 +55,12 @@ const Post = ({
 
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [postInfo, setPostInfo] = useState({
-    postId: 0,
-    reportType: "리포트 타입",
-    postDate: "게시일자",
-    title: "포스트 제목",
-    value: "포스트 내용",
+    postId: post?.id,
+    reportType: report?.reportTypeVersion?.reportType?.title,
+    postDate: report?.createdDateTime,
+    title: post?.title,
+    value: post?.value,
+    modifiedReason: "",
   });
   const [postChanges, setPostChanges] = useState<boolean>();
   const [reportChanges, setReportChanges] = useState<boolean>();
@@ -78,13 +81,12 @@ const Post = ({
       const updatedPostInfo = {
         title: postInfo.title,
         value: postInfo.value,
-        modifiedReason: "",
+        modifiedReason: postInfo.modifiedReason,
       };
       const response = await axios.patch(
-        `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/posts/${router.query.post}`,
+        `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/posts/${postInfo.postId}`,
         updatedPostInfo
       );
-      alert("change to post id");
 
       console.log("변경사항이 성공적으로 반영되었습니다.", response.data);
       setShowSuccessMessage(true);
@@ -100,7 +102,6 @@ const Post = ({
 
   const handleModifyReport = () => {
     console.log(answers.flat().filter((answer) => answer.modified === true));
-    console.log(typeof router.query.post, typeof reportTypeVersion.id);
     formData.append(
       "data",
       JSON.stringify({
@@ -121,7 +122,7 @@ const Post = ({
 
     axios
       .patch(
-        `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/${router.query.post}/answers`,
+        `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/${report.id}/answers`,
         formData,
         {
           headers: {
@@ -317,6 +318,16 @@ const Post = ({
             />
           </StyledContainerThree>
         </div>
+        <StyledContainerThree>
+          <Typography variant="body1">포스트 수정 이유</Typography>
+          <TextField
+            hiddenLabel
+            variant="standard"
+            name="modifiedReason"
+            value={postInfo.modifiedReason}
+            onChange={handlePostChange}
+          />
+        </StyledContainerThree>
       </StyledContainerOne>
       <StyledContainerOne
         style={{
@@ -397,8 +408,14 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 
   try {
+    const postResponse = await axios.get(
+      `${process.env.NEXT_PUBLIC_IP_ADDRESS}/posts/${context.query.post}`,
+      setOrigin
+    );
+    const post = await postResponse.data;
+
     const reportResponse = await axios.get(
-      `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/${context.query.post}`,
+      `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/${post.reportId}`,
       setOrigin
     );
     const report: SpecificReportResponseDto = await reportResponse.data;
@@ -409,13 +426,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     );
     const reportTypeVersion = await reportTypeVersionResponse.data;
 
-    // const postResponse = await axios.get(
-    //   `${process.env.NEXT_PUBLIC_IP_ADDRESS}/posts/${report.post.id}`,
-    //   setOrigin
-    // );
-    // const post = await postResponse.data;
-
-    return { props: { report, reportTypeVersion } };
+    return { props: { report, reportTypeVersion, post } };
   } catch (error) {
     return { props: {} };
   }

@@ -1,4 +1,10 @@
-import { Button, Container, TextField, Typography } from "@mui/material";
+import {
+  Backdrop,
+  Button,
+  Container,
+  TextField,
+  Typography,
+} from "@mui/material";
 import axios from "axios";
 import { useRouter } from "next/router";
 import { ReactElement, useEffect, useMemo, useState } from "react";
@@ -17,6 +23,7 @@ import Image from "next/image";
 import { BasicTable } from "@/components/styledComponents/ReportVersionTable";
 import { GetServerSideProps } from "next";
 import { Animal } from "..";
+import NewIconOverlay from "@/components/report/NewIconOverlay";
 
 export interface ReportTypeVersionSimpleResponseDto {
   id: number;
@@ -64,6 +71,8 @@ const BackOfficeForm = ({
     () => parseInt(router.query.animal as string),
     [router.query.animal]
   );
+  const [openBackdrop, setOpenBackdrop] = useState<boolean>(false);
+
   const [localResponseType, setLocalResponseType] =
     useState<Animal>(reportType);
   const [updates, setUpdates] = useState<number>(0);
@@ -164,108 +173,114 @@ const BackOfficeForm = ({
 
   return (
     <BackOfficeLayout title={localResponseType.subject}>
-      <React.Fragment>
-        <StyledContainerOne
-          style={{
-            backgroundColor: "white",
-            rowGap: "1.5rem",
-            height: "auto",
-            justifyContent: "start",
-          }}
-        >
-          <StyledDivHeader>
-            <Typography variant="h2">리포트 정보</Typography>
-            <StyledButton
-              onClick={handleSubmit}
-              sx={{ marginLeft: "auto" }}
-              disabled={updates == 0}
-            >
-              변경사항 저장하기
-            </StyledButton>
-          </StyledDivHeader>
+      <StyledContainerOne
+        style={{
+          backgroundColor: "white",
+          rowGap: "1.5rem",
+          height: "auto",
+          justifyContent: "start",
+        }}
+      >
+        <StyledDivHeader>
+          <Typography variant="h2">리포트 정보</Typography>
+          <StyledButton
+            onClick={handleSubmit}
+            sx={{ marginLeft: "auto" }}
+            disabled={updates == 0}
+          >
+            변경사항 저장하기
+          </StyledButton>
+        </StyledDivHeader>
 
-          <StyledContainerThree style={{ width: "100%", margin: "0" }}>
-            <Typography variant="body1">아이콘</Typography>
-            <div
-              style={{
-                borderRadius: "1rem",
-                border: "1px dashed var(--Gray, #9AA8BF)",
-                display: "flex",
-                width: "7.5rem",
-                height: " 7.5rem",
-                overflow: "hidden",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <Image
-                src={
-                  localResponseType.thumbnailUrl
-                    ? localResponseType.thumbnailUrl
-                    : "/marc_logo.png"
-                }
-                alt={"animal icon"}
-                width={80}
-                height={80}
-              />
-            </div>
-          </StyledContainerThree>
-
-          <div style={{ display: "flex", width: "100%", columnGap: "1rem" }}>
-            <StyledContainerThree>
-              <Typography variant="body1">제목</Typography>
-              <TextField
-                variant="standard"
-                name={"title"}
-                value={localResponseType.title}
-                onChange={handleChange}
-              />
-            </StyledContainerThree>
-            <StyledContainerThree>
-              <Typography variant="body1">부제목</Typography>
-              <TextField
-                variant="standard"
-                name={"subtitle"}
-                value={localResponseType.subtitle}
-                onChange={handleChange}
-              />
-            </StyledContainerThree>
-            <StyledContainerThree>
-              <Typography variant="body1">비고</Typography>
-              <TextField
-                variant="standard"
-                name={"description"}
-                value={localResponseType.description}
-                onChange={handleChange}
-              />
-            </StyledContainerThree>
+        <StyledContainerThree style={{ width: "100%", margin: "0" }}>
+          <Typography variant="body1">아이콘</Typography>
+          <div
+            style={{
+              borderRadius: "1rem",
+              border: "1px dashed var(--Gray, #9AA8BF)",
+              display: "flex",
+              width: "7.5rem",
+              height: " 7.5rem",
+              overflow: "hidden",
+              justifyContent: "center",
+              alignItems: "center",
+              cursor: "pointer",
+            }}
+            onClick={() => setOpenBackdrop(true)}
+          >
+            <Image
+              src={
+                localResponseType.thumbnailUrl
+                  ? localResponseType.thumbnailUrl
+                  : "/marc_logo.png"
+              }
+              alt={"animal icon"}
+              width={80}
+              height={80}
+            />
           </div>
-        </StyledContainerOne>
+        </StyledContainerThree>
 
-        <StyledContainerOne
-          style={{
-            backgroundColor: "white",
-            rowGap: "1.5rem",
-            height: "auto",
-            justifyContent: "start",
-          }}
-        >
-          <StyledDivHeader>
-            <Typography variant="h2">리포트 버전</Typography>
-            <StyledButton
-              onClick={handleNewVersion}
-              sx={{ marginLeft: "auto" }}
-              disabled={reportTypeVersion.contents.some(
-                (reportVersion) => reportVersion.published !== true
-              )}
-              startIcon={<AddRoundedIcon />}
-            >
-              새 버전 만들기
-            </StyledButton>
-          </StyledDivHeader>
-          <BasicTable reportTypeVersion={reportTypeVersion} />
-        </StyledContainerOne>
-      </React.Fragment>
+        <div style={{ display: "flex", width: "100%", columnGap: "1rem" }}>
+          <StyledContainerThree>
+            <Typography variant="body1">제목</Typography>
+            <TextField
+              variant="standard"
+              name={"title"}
+              value={localResponseType.title}
+              onChange={handleChange}
+            />
+          </StyledContainerThree>
+          <StyledContainerThree>
+            <Typography variant="body1">부제목</Typography>
+            <TextField
+              variant="standard"
+              name={"subtitle"}
+              value={localResponseType.subtitle}
+              onChange={handleChange}
+            />
+          </StyledContainerThree>
+          <StyledContainerThree>
+            <Typography variant="body1">비고</Typography>
+            <TextField
+              variant="standard"
+              name={"description"}
+              value={localResponseType.description}
+              onChange={handleChange}
+            />
+          </StyledContainerThree>
+        </div>
+      </StyledContainerOne>
+
+      <StyledContainerOne
+        style={{
+          backgroundColor: "white",
+          rowGap: "1.5rem",
+          height: "auto",
+          justifyContent: "start",
+        }}
+      >
+        <StyledDivHeader>
+          <Typography variant="h2">리포트 버전</Typography>
+          <StyledButton
+            onClick={handleNewVersion}
+            sx={{ marginLeft: "auto" }}
+            disabled={reportTypeVersion.contents.some(
+              (reportVersion) => reportVersion.published !== true
+            )}
+            startIcon={<AddRoundedIcon />}
+          >
+            새 버전 만들기
+          </StyledButton>
+        </StyledDivHeader>
+        <BasicTable reportTypeVersion={reportTypeVersion} />
+      </StyledContainerOne>
+      <Backdrop open={openBackdrop} sx={{ zIndex: "9999" }}>
+        <NewIconOverlay
+          setOpenBackdrop={setOpenBackdrop}
+          oldData={reportType}
+        />
+      </Backdrop>
     </BackOfficeLayout>
   );
 };
