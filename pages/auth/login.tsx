@@ -1,13 +1,12 @@
 import { Container, Typography } from "@mui/material";
 import Image from "next/image";
-import marc_logo from "@/public/marc_logo.png";
-import { StyledButton } from "@/components/layout/BackOfficeLayout";
-import { store } from "@/redux/store";
 
-export default function Home() {
-  const state = store.getState();
-  const goLogin = () => {
-    window.location.href = "/auth/login";
+import kakao_login_medium_wide from "@/public/kakao_login_medium_wide.png";
+import marc_logo from "@/public/marc_logo.png";
+
+export default function LoginPage() {
+  const handleLogin = () => {
+    window.location.href = `${process.env.NEXT_PUBLIC_IP_ADDRESS}/auth/kakao?bof`;
   };
   return (
     <Container
@@ -42,30 +41,11 @@ export default function Home() {
           padding: "16px 16px 40px 16px",
         }}
       >
-        {state.isAdmin ? (
-          <Typography variant="h2">
-            어서오세요, {state.user.nickname}님.
-          </Typography>
-        ) : (
-          <Container
-            sx={{
-              justifyContent: "flex-start",
-              alignItems: "center",
-              gap: "20px",
-            }}
-          >
-            <Typography variant="h2">
-              로그인 후 이용할 수 있는 서비스입니다.
-            </Typography>
-            <StyledButton
-              color="primary"
-              onClick={goLogin}
-              sx={{ width: "358px" }}
-            >
-              <Typography variant="button">로그인하기</Typography>
-            </StyledButton>
-          </Container>
-        )}
+        <Image
+          src={kakao_login_medium_wide}
+          alt="kakao_button"
+          onClick={handleLogin}
+        />
       </Container>
     </Container>
   );
