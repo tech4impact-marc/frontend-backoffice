@@ -11,6 +11,7 @@ const initialState = {
     refreshToken: 0,
   },
   isAdmin: false,
+  loginState: {},
 };
 
 // 리듀서
@@ -46,6 +47,11 @@ const reducer = (state = initialState, action: any) => {
       return {
         ...state,
         isAdmin: action.payload,
+      };
+    case "SET_LOGINSTATE":
+      return {
+        ...state,
+        loginState: action.payload,
       };
     // 다른 액션 추가 가능
     default:
