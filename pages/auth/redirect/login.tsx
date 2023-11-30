@@ -25,33 +25,30 @@ export default function LoginRedirectPage() {
           throw new Error("Network response was not ok");
         }
         console.log(response.data);
-        if (response.data.user.role === "USER") {
+        store.dispatch({
+          type: "SET_TOKENS",
+          payload: response.data.tokens,
+        });
+        store.dispatch({ type: "SET_USER", payload: response.data.user });
+        store.dispatch({
+          type: "SET_ACCESSTOKEN_EXPIRESAT",
+          payload: Date.now() + response.data.tokens.expiresIn * 1000,
+        });
+        store.dispatch({
+          type: "SET_REFRESHTOKEN_EXPIRESAT",
+          payload:
+            Date.now() + response.data.tokens.refreshTokenExpiresIn * 1000,
+        });
+        store.dispatch({
+          type: "SET_ISADMIN",
+          payload: true,
+        });
+        router.push("/");
+      } catch (error) {
+        if (error.response.status === 403) {
           alert("관리자로 인증된 계정만 이용할 수 있는 서비스입니다.");
-          setEx(false);
-          router.push("/");
-        } else {
-          store.dispatch({
-            type: "SET_TOKENS",
-            payload: response.data.tokens,
-          });
-          store.dispatch({ type: "SET_USER", payload: response.data.user });
-          store.dispatch({
-            type: "SET_ACCESSTOKEN_EXPIRESAT",
-            payload: Date.now() + response.data.tokens.expiresIn * 1000,
-          });
-          store.dispatch({
-            type: "SET_REFRESHTOKEN_EXPIRESAT",
-            payload:
-              Date.now() + response.data.tokens.refreshTokenExpiresIn * 1000,
-          });
-          store.dispatch({
-            type: "SET_ISADMIN",
-            payload: true,
-          });
-          setEx(false);
           router.push("/");
         }
-      } catch (error) {
         console.error("Error occured:", error);
       }
     }

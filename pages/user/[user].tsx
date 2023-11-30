@@ -60,14 +60,12 @@ export default function User() {
         params: params,
       });
       const dataResponse = response.data;
-      console.log(dataResponse);
       const newRows = dataResponse.contents.map((report: any) => ({
         "리포트 ID": report.id,
         "리포트 타입": report.reportTypeVersion.reportType.label,
         "게시 일자": report.createdDateTime,
       }));
 
-      console.log(newRows);
       setRows(newRows);
       setTotalNumberOfPages(dataResponse.totalNumberOfPages);
     } catch (error) {
@@ -134,7 +132,6 @@ export default function User() {
   ) => {
     setCurrentPage(newPage - 1);
     fetchReport(currentPage, userInfo.userId);
-    console.log(currentPage);
   };
 
   useEffect(() => {
@@ -151,8 +148,6 @@ export default function User() {
             },
           }
         );
-        console.log(user);
-        console.log(response.data);
         if (response.data.totalNumberOfElements === 0) {
           alert("존재하지 않는 유저입니다.");
           router.back();
@@ -165,9 +160,11 @@ export default function User() {
           email: userData.email,
           phoneNumber: userData.phoneNumber,
         });
-        console.log(user);
-        console.log(userInfo);
-        console.log(userInfo.userId);
+        setPrevUserInfo({
+          nickname: userData.nickname,
+          email: userData.email,
+          phoneNumber: userData.phoneNumber,
+        });
       } catch (error) {
         console.log("에러 발생: ", error);
       }
@@ -180,9 +177,10 @@ export default function User() {
     if (userInfo.userId === 0) {
       return;
     }
-    console.log(currentPage, userInfo.userId);
     fetchReport(currentPage, userInfo.userId);
   }, [currentPage, userInfo.userId]);
+
+  console.log(userInfo, prevUserInfo);
 
   return (
     <React.Fragment>
