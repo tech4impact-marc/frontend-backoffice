@@ -22,13 +22,6 @@ const columns: string[] = ["리포트 ID", "리포트 타입", "게시 일자"];
 export default function User() {
   const router = useRouter();
   const { user } = router.query;
-  const [initialUserInfo, setInitialUserInfo] = useState({
-    userId: 0,
-    signup: "",
-    nickname: "",
-    email: "",
-    phoneNumber: "",
-  });
   const [userInfo, setUserInfo] = useState({
     userId: 0,
     signup: "",
@@ -36,12 +29,14 @@ export default function User() {
     email: "",
     phoneNumber: "",
   });
-  const [isNicknameChanged, setIsNicknameChanged] = useState(false);
-  const [isEmailChanged, setIsEmailChanged] = useState(false);
-  const [isPhoneNumberChanged, setIsPhoneNumberChanged] = useState(false);
+  const [prevUserInfo, setPrevUserInfo] = useState({
+    nickname: "",
+    email: "",
+    phoneNumber: "",
+  });
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [rows, setRows] = useState<
-    { "리포트 ID": number; "리포트 타입": string; "게시 일자": string }[]
+    { "포스트 ID": number; "리포트 타입": string; "게시 일자": string }[]
   >([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalNumberOfPages, setTotalNumberOfPages] = useState(1);
@@ -57,21 +52,17 @@ export default function User() {
       params.user = userId;
     }
 
-    params.size = 10;
-
     try {
       const response = await axios.get(`http://3.37.177.6/api/admin/reports`, {
         params: params,
       });
       const dataResponse = response.data;
-      console.log(dataResponse);
       const newRows = dataResponse.contents.map((report: any) => ({
         "리포트 ID": report.id,
         "리포트 타입": report.reportTypeVersion.reportType.label,
         "게시 일자": report.createdDateTime,
       }));
 
-      console.log(newRows);
       setRows(newRows);
       setTotalNumberOfPages(dataResponse.totalNumberOfPages);
     } catch (error) {
@@ -80,32 +71,26 @@ export default function User() {
   };
 
   const handleNicknameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newNickname = event.target.value;
     setUserInfo({
       ...userInfo,
-      nickname: newNickname,
+      nickname: event.target.value,
     });
-    setIsNicknameChanged(newNickname !== initialUserInfo.nickname);
   };
 
   const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newEmail = event.target.value;
     setUserInfo({
       ...userInfo,
-      email: newEmail,
+      email: event.target.value,
     });
-    setIsEmailChanged(newEmail !== initialUserInfo.email);
   };
 
   const handlePhoneNumberChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    const newPhoneNumber = event.target.value;
     setUserInfo({
       ...userInfo,
-      phoneNumber: newPhoneNumber,
+      phoneNumber: event.target.value,
     });
-    setIsPhoneNumberChanged(newPhoneNumber !== initialUserInfo.phoneNumber);
   };
 
   const handleSaveChanges = async () => {
@@ -116,8 +101,6 @@ export default function User() {
         phoneNumber: userInfo.phoneNumber,
         profileIsDefaultImage: false,
       };
-      console.log(updatedUserInfo);
-      console.log(userInfo.userId);
 
       const response = await axios.patch(
         `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/users/${userInfo.userId}`,
@@ -126,6 +109,11 @@ export default function User() {
 
       console.log("변경사항이 성공적으로 반영되었습니다.", response.data);
       setShowSuccessMessage(true);
+      setPrevUserInfo({
+        nickname: userInfo.nickname,
+        email: userInfo.email,
+        phoneNumber: userInfo.phoneNumber,
+      });
 
       setTimeout(() => {
         setShowSuccessMessage(false);
@@ -141,7 +129,6 @@ export default function User() {
   ) => {
     setCurrentPage(newPage - 1);
     fetchReport(currentPage, userInfo.userId);
-    console.log(currentPage);
   };
 
   useEffect(() => {
@@ -158,20 +145,11 @@ export default function User() {
             },
           }
         );
-        console.log(user);
-        console.log(response.data);
         if (response.data.totalNumberOfElements === 0) {
           alert("존재하지 않는 유저입니다.");
           router.back();
         }
         const userData = response.data.contents[0];
-        setInitialUserInfo({
-          userId: userData.id,
-          signup: userData.createdDateTime,
-          nickname: userData.nickname,
-          email: userData.email,
-          phoneNumber: userData.phoneNumber,
-        });
         setUserInfo({
           userId: userData.id,
           signup: userData.createdDateTime,
@@ -179,9 +157,11 @@ export default function User() {
           email: userData.email,
           phoneNumber: userData.phoneNumber,
         });
-        console.log(user);
-        console.log(userInfo);
-        console.log(userInfo.userId);
+        setPrevUserInfo({
+          nickname: userData.nickname,
+          email: userData.email,
+          phoneNumber: userData.phoneNumber,
+        });
       } catch (error) {
         console.log("에러 발생: ", error);
       }
@@ -194,9 +174,10 @@ export default function User() {
     if (userInfo.userId === 0) {
       return;
     }
-    console.log(currentPage, userInfo.userId);
     fetchReport(currentPage, userInfo.userId);
   }, [currentPage, userInfo.userId]);
+
+  console.log(userInfo, prevUserInfo);
 
   return (
     <React.Fragment>
@@ -230,7 +211,11 @@ export default function User() {
                 color="primary"
                 sx={{ marginLeft: "auto" }}
                 disabled={
-                  !(isNicknameChanged || isEmailChanged || isPhoneNumberChanged)
+                  !(
+                    userInfo.nickname !== prevUserInfo.nickname ||
+                    userInfo.email !== prevUserInfo.email ||
+                    userInfo.phoneNumber !== prevUserInfo.phoneNumber
+                  )
                 }
                 onClick={handleSaveChanges}
               >
@@ -296,7 +281,7 @@ export default function User() {
           }}
         >
           <Container sx={{ flexDirection: "row" }}>
-            <Typography variant="h2">유저 리포트</Typography>
+            <Typography variant="h2">유저 포스트</Typography>
 
             <Pagination
               count={totalNumberOfPages}

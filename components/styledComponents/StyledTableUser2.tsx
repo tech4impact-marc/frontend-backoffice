@@ -17,6 +17,12 @@ export default function StickyHeadTableUser2({
   columns: string[];
   rows: { [key: string]: string | number }[];
 }) {
+  const router = useRouter();
+
+  const handleRowClick = (postId: string | number) => {
+    router.push(`/posts/${postId}`);
+  };
+
   return (
     <Paper sx={{ width: "100%", overflow: "hidden" }}>
       <TableContainer sx={{ maxHeight: 800 }}>
@@ -44,7 +50,13 @@ export default function StickyHeadTableUser2({
             ) : (
               rows.map((row, rowIndex) => {
                 return (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={rowIndex}>
+                  <TableRow
+                    hover
+                    role="checkbox"
+                    tabIndex={-1}
+                    key={rowIndex}
+                    onClick={() => handleRowClick(row["리포트 ID"])}
+                  >
                     {columns.map((column, index) => {
                       const value = row[column];
                       return (

@@ -291,9 +291,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     const reportTypeVersion = await reportTypeVersionResponse.data;
 
     return { props: { reportType, reportTypeVersion } };
-  } catch {
-    console.log("There was an error");
+  } catch (error) {
+    return { props: {} };
   }
-
-  return { props: {} };
 };
