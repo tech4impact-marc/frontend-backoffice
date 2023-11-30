@@ -1,7 +1,10 @@
-import { StyledButton } from "@/components/layout/BackOfficeLayout";
+import BackOfficeLayout, {
+  StyledButton,
+} from "@/components/layout/BackOfficeLayout";
 import {
   StyledContainerOne,
   StyledContainerThree,
+  StyledDivHeader,
 } from "@/components/styledComponents/StyledContainer";
 import StickyHeadTableUser2 from "@/components/styledComponents/StyledTableUser2";
 import {
@@ -11,7 +14,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { ReactElement, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import axios from "axios";
 
@@ -192,6 +195,7 @@ export default function User() {
           padding: "16px 32px 32px 32px",
           gap: "16px",
           flex: "1 0 0",
+          maxWidth: "none",
         }}
       >
         <StyledContainerOne
@@ -201,32 +205,23 @@ export default function User() {
             height: "auto",
           }}
         >
-          <div
-            style={{
-              display: "flex",
-              width: "100%",
-              columnGap: "1rem",
-              alignItems: "center",
-            }}
-          >
-            <Container sx={{ flexDirection: "row" }}>
-              <Typography variant="h2">유저 정보</Typography>
-              <StyledButton
-                color="primary"
-                sx={{ marginLeft: "auto" }}
-                disabled={
-                  !(
-                    userInfo.nickname !== prevUserInfo.nickname ||
-                    userInfo.email !== prevUserInfo.email ||
-                    userInfo.phoneNumber !== prevUserInfo.phoneNumber
-                  )
-                }
-                onClick={handleSaveChanges}
-              >
-                변경사항 저장하기
-              </StyledButton>
-            </Container>
-          </div>
+          <StyledDivHeader>
+            <Typography variant="h2">유저 정보</Typography>
+            <StyledButton
+              color="primary"
+              sx={{ marginLeft: "auto" }}
+              disabled={
+                !(
+                  userInfo.nickname !== prevUserInfo.nickname ||
+                  userInfo.email !== prevUserInfo.email ||
+                  userInfo.phoneNumber !== prevUserInfo.phoneNumber
+                )
+              }
+              onClick={handleSaveChanges}
+            >
+              변경사항 저장하기
+            </StyledButton>
+          </StyledDivHeader>
 
           <div style={{ display: "flex", width: "100%", columnGap: "1rem" }}>
             <StyledContainerThree>
@@ -284,7 +279,7 @@ export default function User() {
             height: "auto",
           }}
         >
-          <Container sx={{ flexDirection: "row" }}>
+          <StyledDivHeader>
             <Typography variant="h2">유저 포스트</Typography>
 
             <Pagination
@@ -295,7 +290,7 @@ export default function User() {
                 marginLeft: "auto",
               }}
             />
-          </Container>
+          </StyledDivHeader>
           <StickyHeadTableUser2 columns={columns} rows={rows} />
         </StyledContainerOne>
       </Container>
@@ -325,3 +320,7 @@ export default function User() {
     </React.Fragment>
   );
 }
+
+User.getLayout = (page: ReactElement) => (
+  <BackOfficeLayout>{page}</BackOfficeLayout>
+);

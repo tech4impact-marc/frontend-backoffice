@@ -2,7 +2,11 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ["drive.google.com"],
+    domains: [
+      "drive.google.com",
+      "multerimagelocationurl1.com",
+      "marc-data.s3.ap-northeast-2.amazonaws.com",
+    ],
   },
 };
 

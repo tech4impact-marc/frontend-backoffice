@@ -14,7 +14,7 @@ import {
   StyledDivHeader,
 } from "@/components/styledComponents/StyledContainer";
 import Image from "next/image";
-import { BasicTable } from "@/components/styledComponents/StyledTable2";
+import { BasicTable } from "@/components/styledComponents/ReportVersionTable";
 import { GetServerSideProps } from "next";
 import { Animal } from "..";
 
@@ -163,7 +163,7 @@ const BackOfficeForm = ({
   }
 
   return (
-    <React.Fragment>
+    <BackOfficeLayout title={localResponseType.subject}>
       <React.Fragment>
         <StyledContainerOne
           style={{
@@ -266,27 +266,32 @@ const BackOfficeForm = ({
           <BasicTable reportTypeVersion={reportTypeVersion} />
         </StyledContainerOne>
       </React.Fragment>
-    </React.Fragment>
+    </BackOfficeLayout>
   );
 };
 
 export default BackOfficeForm;
 
-BackOfficeForm.getLayout = (page: ReactElement) => (
-  <BackOfficeLayout>{page}</BackOfficeLayout>
-);
+BackOfficeForm.getLayout = (page: ReactElement) => <>{page}</>;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
+  const setOrigin = {
+    headers: {
+      Origin: `${process.env.NEXT_PUBLIC_FRONT_URL}`,
+    },
+  };
   const selectedAnimal = context.query.animal;
 
   try {
     const reportTypeResponse = await axios.get(
-      `${process.env.NEXT_PUBLIC_IP_ADDRESS}/reports/types/${selectedAnimal}`
+      `${process.env.NEXT_PUBLIC_IP_ADDRESS}/reports/types/${selectedAnimal}`, //보류 for kakao login
+      setOrigin
     );
     const reportType: Animal = await reportTypeResponse.data;
 
     const reportTypeVersionResponse = await axios.get(
-      `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/types/${selectedAnimal}/versions` // admin용은 없어...
+      `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/types/${selectedAnimal}/versions`,
+      setOrigin
     );
     const reportTypeVersion = await reportTypeVersionResponse.data;
 

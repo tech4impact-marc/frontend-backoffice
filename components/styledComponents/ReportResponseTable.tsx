@@ -11,9 +11,11 @@ import {
   DataGrid,
   GridActionsCellItem,
   GridColDef,
+  GridEventListener,
   GridRowId,
   GridRowModes,
   GridRowModesModel,
+  GridRowParams,
   useGridApiContext,
   useGridApiRef,
 } from "@mui/x-data-grid";
@@ -36,63 +38,6 @@ export const ReportResponseTable = ({
   );
   const apiRef = useGridApiRef();
   const router = useRouter();
-
-  const handleSaveClick = (id: GridRowId) => () => {
-    const rowUpdates = apiRef.current.getRowWithUpdatedValues(
-      id,
-      "modifiedByAdmin"
-    );
-    const answers = Object.keys(rowUpdates)
-      .map((questionId, index) => ({
-        value: rowUpdates[questionId],
-        type: parsedHeaders[index + 1]?.type,
-        questionId: questionId,
-      }))
-      .filter((item, index) => item.type);
-    const formData = new FormData();
-    formData.append(
-      "data",
-      JSON.stringify({
-        reportTypeId: parseInt(router.query.animal as string),
-        reportTypeVersionId: parseInt(router.query.version as string),
-        answers: answers,
-      })
-    );
-
-    axios
-      .patch(
-        `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/${id}/answers`,
-        formData,
-        {
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          transformRequest: (formData) => formData,
-        }
-      )
-      .then(function (response) {
-        if (response.status == 200) {
-          setRowModesModel({
-            ...rowModesModel,
-            [id]: { mode: GridRowModes.View },
-          });
-        } else {
-          console.log(response);
-        }
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
-  };
-
-  const handleCancelClick = (id: GridRowId) => () => {
-    setRowModesModel({
-      ...rowModesModel,
-      [id]: { mode: GridRowModes.View, ignoreModifications: true },
-    });
-  };
-
-  const handleEditClick = (id: GridRowId) => () => {
-    setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } });
-  };
 
   const handleDeleteClick = (id: GridRowId) => () => {
     if (!parsedData.find((row) => row.id !== id)) {
@@ -122,47 +67,15 @@ export const ReportResponseTable = ({
       headerName: "Actions",
       width: 100,
       getActions: ({ id }) => {
-        const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
-
-        if (isInEditMode) {
-          return [
-            <GridActionsCellItem
-              key={1}
-              icon={<SaveIcon />}
-              label="Save"
-              sx={{
-                color: "primary.main",
-              }}
-              onClick={handleSaveClick(id)}
-            />,
-            <GridActionsCellItem
-              key={2}
-              icon={<ClearRoundedIcon />}
-              label="Cancel"
-              className="textPrimary"
-              onClick={handleCancelClick(id)}
-              color="inherit"
-            />,
-          ];
-        } else {
-          return [
-            <GridActionsCellItem
-              key={1}
-              icon={<EditRoundedIcon />}
-              label="Edit"
-              className="textPrimary"
-              onClick={handleEditClick(id)}
-              color="inherit"
-            />,
-            <GridActionsCellItem
-              key={2}
-              icon={<DeleteRoundedIcon />}
-              label="Delete"
-              onClick={handleDeleteClick(id)}
-              color="inherit"
-            />,
-          ];
-        }
+        return [
+          <GridActionsCellItem
+            key={2}
+            icon={<DeleteRoundedIcon />}
+            label="Delete"
+            onClick={handleDeleteClick(id)}
+            color="inherit"
+          />,
+        ];
       },
     },
   ];
@@ -177,7 +90,6 @@ export const ReportResponseTable = ({
         headerName: header.label,
         type: header.type,
         minWidth: 200,
-        editable: true,
       }))
   );
 
@@ -187,17 +99,32 @@ export const ReportResponseTable = ({
     }))
   );
 
+  const handleRowClick: GridEventListener<"rowClick"> = (
+    params: GridRowParams
+  ) => {
+    router.push(`/posts/${params.row.id}`);
+  };
+
   // return <></>;
   return (
     <Box sx={{ width: "100%" }}>
       <DataGrid
-        editMode="row"
         columns={parsedHeaders}
         rows={parsedData}
-        sx={{ overflow: "scroll", minWidth: "100%" }}
+        sx={{
+          overflow: "scroll",
+          minWidth: "100%",
+          ".MuiDataGrid-cell:focus": {
+            outline: "none",
+          },
+          "& .MuiDataGrid-row:hover": {
+            cursor: "pointer",
+          },
+        }}
         rowModesModel={rowModesModel}
         apiRef={apiRef}
         getRowId={(row) => row.id}
+        onRowClick={handleRowClick}
       />
     </Box>
   );
