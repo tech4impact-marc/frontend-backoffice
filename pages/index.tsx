@@ -3,8 +3,9 @@ import Image from "next/image";
 import marc_logo from "@/public/marc_logo.png";
 import { StyledButton } from "@/components/layout/BackOfficeLayout";
 import { store } from "@/redux/store";
+import { ReactElement } from "react";
 
-export default function Home() {
+const Home = () => {
   const state = store.getState();
   const goLogin = () => {
     window.location.href = "/auth/login";
@@ -69,4 +70,8 @@ export default function Home() {
       </Container>
     </Container>
   );
-}
+};
+
+export default Home;
+
+Home.getLayout = (page: ReactElement) => <>{page}</>;

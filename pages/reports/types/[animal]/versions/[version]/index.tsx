@@ -2,18 +2,22 @@ import axios from "axios";
 import { GetServerSideProps } from "next";
 import { ReportTypeVersionSimpleResponseDto } from "../..";
 import { useRouter } from "next/router";
-import React, { useMemo, useState } from "react";
+import React, { ReactElement, useMemo, useState } from "react";
 import {
   StyledContainerOne,
   StyledContainerThree,
   StyledDivHeader,
 } from "@/components/styledComponents/StyledContainer";
 import { Tab, Tabs, TextField, Typography, styled } from "@mui/material";
-import { StyledButton } from "@/components/layout/BackOfficeLayout";
+import BackOfficeLayout, {
+  StyledButton,
+} from "@/components/layout/BackOfficeLayout";
 import theme from "@/styles/theme";
 import { BasicDragQuestionsTable } from "@/components/styledComponents/QuestionTable/Table";
 import { error } from "console";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import CircularProgress from "@mui/material/CircularProgress";
+
 import {
   DownloadCSV,
   ReportResponseTable,
@@ -112,12 +116,18 @@ const StyledTab = styled((props: StyledTabProps) => (
 const ReportVersion = ({
   reportTypeVersion,
   reports,
+  title,
 }: {
   reportTypeVersion: ReportTypeVersionSimpleResponseDto;
   reports: ReportResponseDto;
+  title: string;
 }) => {
+  console.log(reportTypeVersion);
   const { data: csvData, headers: csvHeaders } = useMemo(
-    () => responseToCsvData(reportTypeVersion.questions, reports.contents),
+    () =>
+      reportTypeVersion && reports
+        ? responseToCsvData(reportTypeVersion.questions, reports.contents)
+        : { data: null, headers: null },
     []
   );
 
@@ -129,7 +139,7 @@ const ReportVersion = ({
     setTab(newValue);
   };
 
-  if (!reportTypeVersion || !reports) {
+  if (!csvData || !csvHeaders) {
     return <React.Fragment></React.Fragment>;
   }
 
@@ -146,13 +156,13 @@ const ReportVersion = ({
           alert("성공적으로 배포했습니다.");
           window.location.reload();
         } else {
-          console.log("오류가 있었습니다.");
+          alert("오류가 있었습니다.");
         }
       } else {
-        console.log("오류가 있었습니다.");
+        alert("오류가 있었습니다.");
       }
     } catch (error) {
-      console.log("오류가 있었습니다.");
+      alert("오류가 있었습니다.");
     }
   };
 
@@ -202,12 +212,6 @@ const ReportVersion = ({
           alert("오류가 있었습니다.");
         } else {
           window.location.reload();
-          // router.push(
-          //   `/reports/types/${query.animal}/versions/${query.version}/questions/${response.data.id}`
-          // );
-          // router.push(
-          //   `/reports/types/${query.animal}/versions/${query.version}`
-          // );
         }
       })
       .catch((error) => {
@@ -216,7 +220,7 @@ const ReportVersion = ({
   };
 
   return (
-    <React.Fragment>
+    <BackOfficeLayout title={title}>
       <StyledContainerOne
         style={{
           backgroundColor: "white",
@@ -226,37 +230,17 @@ const ReportVersion = ({
         }}
       >
         <StyledDivHeader>
-          <Typography variant="h2">리포트 버전 정보</Typography>
+          <Typography variant="h2">
+            리포트 버전 {reportTypeVersion.versionNumber}
+          </Typography>
           <StyledButton
             onClick={handlePublish}
             sx={{ marginLeft: "auto" }}
             disabled={reportTypeVersion.published}
           >
-            {/* {reportTypeVersion.published ? "복제하기" : "배포하기"} */}
             배포하기
           </StyledButton>
         </StyledDivHeader>
-
-        {/* <div style={{ display: "flex", width: "100%", columnGap: "1rem" }}> */}
-        <StyledContainerThree style={{ flex: "1" }}>
-          <Typography variant="body1">버전</Typography>
-          <TextField
-            variant="standard"
-            name={"title"}
-            value={`V${reportTypeVersion.versionNumber}`}
-            disabled
-          />
-        </StyledContainerThree>
-        {/* <StyledContainerThree style={{ flex: "5" }}>
-            <Typography variant="body1">메모</Typography>
-            <TextField
-              variant="standard"
-              name={"subtitle"}
-              value={"MEMO가 없다..?"}
-              disabled
-            />
-          </StyledContainerThree>
-        </div> */}
       </StyledContainerOne>
 
       <StyledContainerOne style={{ padding: "0" }}>
@@ -307,27 +291,42 @@ const ReportVersion = ({
           <ReportResponseTable csvHeaders={csvHeaders} csvData={csvData} />
         </StyledContainerOne>
       )}
-    </React.Fragment>
+    </BackOfficeLayout>
   );
 };
 export default ReportVersion;
 
+ReportVersion.getLayout = (page: ReactElement) => <>{page}</>;
+
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const selectedAnimal = context.query.animal;
   const selectedVersion = context.query.version;
+  const setOrigin = {
+    headers: {
+      Origin: `${process.env.NEXT_PUBLIC_FRONT_URL}`,
+    },
+  };
 
   try {
+    const reportTypeResponse = await axios.get(
+      `${process.env.NEXT_PUBLIC_IP_ADDRESS}/reports/types/${selectedAnimal}`,
+      setOrigin
+    );
+    const title = await reportTypeResponse.data.subject;
+
     const reportTypeVersionResponse = await axios.get(
-      `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/types/${selectedAnimal}/versions/${selectedVersion}`
+      `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/types/${selectedAnimal}/versions/${selectedVersion}`,
+      setOrigin
     );
     const reportTypeVersion = await reportTypeVersionResponse.data;
 
     const reportsResponse = await axios.get(
-      `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/full?reportType=${selectedAnimal}&reportTypeVersion=${selectedVersion}`
+      `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/full?reportType=${selectedAnimal}&reportTypeVersion=${selectedVersion}`,
+      setOrigin
     );
     const reports = await reportsResponse.data;
 
-    return { props: { reportTypeVersion, reports } };
+    return { props: { reportTypeVersion, reports, title } };
   } catch (error) {
     return { props: {} };
   }

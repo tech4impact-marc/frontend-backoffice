@@ -77,7 +77,7 @@ export default function User() {
           `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/${id}`
         );
         console.log(id);
-        console.log(response.data);
+        console.log(response.data, response.data.post.title);
         const reportData = response.data;
         setPostInfo({
           postId: reportData.post.id,
