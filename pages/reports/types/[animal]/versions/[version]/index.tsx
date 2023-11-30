@@ -122,7 +122,7 @@ const ReportVersion = ({
   reports: ReportResponseDto;
   title: string;
 }) => {
-  console.log(reportTypeVersion);
+  console.log(reportTypeVersion, reports);
   const { data: csvData, headers: csvHeaders } = useMemo(
     () =>
       reportTypeVersion && reports

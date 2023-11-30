@@ -68,8 +68,11 @@ export const BasicDragQuestionsTable = ({
             <TableCell width={"20%"}>Title</TableCell>
             <TableCell width={"20%"}>Description</TableCell>
             <TableCell width={"20%"}>is Main</TableCell>
-            <TableCell width={"20%"}>Required</TableCell>
-            <TableCell width={"20%"}>Type</TableCell>
+            <TableCell width={"15%"}>Required</TableCell>
+            <TableCell width={"15%"}>Type</TableCell>
+            <TableCell width={"15%"} align="center">
+              Delete
+            </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -89,7 +92,11 @@ export const BasicDragQuestionsTable = ({
                 strategy={verticalListSortingStrategy}
               >
                 {sortedQuestions.slice(3).map((question) => (
-                  <SortableItem key={question.id} row={question} />
+                  <SortableItem
+                    key={question.id}
+                    row={question}
+                    published={published}
+                  />
                 ))}
               </SortableContext>
             </React.Fragment>

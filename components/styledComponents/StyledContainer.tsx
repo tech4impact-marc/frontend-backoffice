@@ -19,13 +19,13 @@ export const StyledContainerOne = styled(Container)`
 export const StyledContainerTwo = styled(Container)`
   padding: 0 !important;
   row-gap: 1rem;
-  max-width: none;
+  max-width: none !important;
 `;
 
 export const StyledContainerThree = styled(Container)`
   padding: 0 !important;
   row-gap: 0.5rem;
-  max-width: none;
+  max-width: none !important;
 `;
 
 export const StyledContainerHeader = styled(Container)`
