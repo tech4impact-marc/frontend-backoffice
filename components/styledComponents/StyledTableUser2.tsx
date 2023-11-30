@@ -55,7 +55,7 @@ export default function StickyHeadTableUser2({
                     role="checkbox"
                     tabIndex={-1}
                     key={rowIndex}
-                    onClick={() => handleRowClick(row["리포트 ID"])}
+                    onClick={() => handleRowClick(row["포스트 ID"])}
                   >
                     {columns.map((column, index) => {
                       const value = row[column];
