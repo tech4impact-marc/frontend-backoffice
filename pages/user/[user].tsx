@@ -55,7 +55,6 @@ export default function User() {
       params.user = userId;
     }
 
-    console.log(params);
     try {
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports`,
@@ -63,8 +62,8 @@ export default function User() {
           params: params,
         }
       );
+
       const dataResponse = response.data;
-      console.log(dataResponse);
       const newRows = dataResponse.contents.map((report: any) => ({
         "포스트 ID": report.post.id,
         "리포트 타입": report.reportTypeVersion.reportType.label,
