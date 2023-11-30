@@ -20,9 +20,8 @@ import {
   useGridApiRef,
 } from "@mui/x-data-grid";
 import { Box } from "@mui/material";
-import SaveIcon from "@mui/icons-material/Save";
-import ClearRoundedIcon from "@mui/icons-material/ClearRounded";
-import EditRoundedIcon from "@mui/icons-material/EditRounded";
+import CheckCircleOutlineRoundedIcon from "@mui/icons-material/CheckCircleOutlineRounded";
+import CancelRoundedIcon from "@mui/icons-material/CancelRounded";
 import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
 import axios from "axios";
 
@@ -40,7 +39,7 @@ export const ReportResponseTable = ({
   const router = useRouter();
 
   const handleDeleteClick = (id: GridRowId) => () => {
-    if (!parsedData.find((row) => row.id !== id)) {
+    if (!parsedData.find((row) => row.id === id)) {
       return;
     }
     if (confirm("리포트를 진짜 삭제하시겠습니까?")) {
@@ -60,12 +59,44 @@ export const ReportResponseTable = ({
     }
   };
 
+  const handleTogglePublic = (id: GridRowId) => () => {
+    const row = parsedData.find((row) => row.id === id);
+    if (!row) {
+      return;
+    }
+    if (
+      confirm(
+        `리포트를 ${row.isPublic ? "비공개로" : "공개로"} 바꾸시겠습니까?`
+      )
+    ) {
+      axios
+        .patch(`${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/${id}`, {
+          isPublic: !row.isPublic,
+        })
+        .then((response) => {
+          if (response.status === 200) {
+            setParsedData(
+              parsedData.map((row) =>
+                row.id === id ? { ...row, isPublic: !row.isPublic } : row
+              )
+            );
+            console.log(response.data);
+          } else {
+            console.log("에러가 있었습니다");
+          }
+        })
+        .catch((error) => {
+          console.error("에러가 있었습니다");
+        });
+    }
+  };
+
   const parsedHeaders: GridColDef[] = [
     {
-      field: "actions",
+      field: "delete",
       type: "actions",
-      headerName: "Actions",
-      width: 100,
+      headerName: "삭제",
+      width: 70,
       getActions: ({ id }) => {
         return [
           <GridActionsCellItem
@@ -73,6 +104,29 @@ export const ReportResponseTable = ({
             icon={<DeleteRoundedIcon />}
             label="Delete"
             onClick={handleDeleteClick(id)}
+            color="inherit"
+          />,
+        ];
+      },
+    },
+    {
+      field: "open",
+      type: "actions",
+      headerName: "공개",
+      width: 70,
+      getActions: ({ id, row }) => {
+        return [
+          <GridActionsCellItem
+            key={2}
+            icon={
+              row.isPublic ? (
+                <CheckCircleOutlineRoundedIcon />
+              ) : (
+                <CancelRoundedIcon />
+              )
+            }
+            label="Open"
+            onClick={handleTogglePublic(id)}
             color="inherit"
           />,
         ];
@@ -240,6 +294,7 @@ const processReportResponse = (report: any) => {
     createdDateTime: report.createdDateTime,
     modifiedByAdmin: report.modifiedByAdmin,
     id: report.id,
+    isPublic: report.isPublic,
     ...processAnswers(report.answers),
   };
 };
