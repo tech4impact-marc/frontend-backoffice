@@ -15,7 +15,7 @@ const LogoutPage = () => {
         alert("로그인 상태가 아닙니다.");
         router.push("/");
       } else {
-        window.location.href = `${process.env.NEXT_PUBLIC_IP_ADDRESS}/auth/kakao/logout`;
+        window.location.href = `${process.env.NEXT_PUBLIC_IP_ADDRESS}/auth/kakao/logout?bof`;
       }
     }
   }, [ex]);
