@@ -118,7 +118,7 @@ const Post = ({
         return updatedAnswers;
       });
     },
-    [answers]
+    []
   );
 
   if (!report) {

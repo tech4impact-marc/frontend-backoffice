@@ -8,6 +8,9 @@ import { PersistGate } from "redux-persist/integration/react";
 import { useRouter } from "next/router";
 
 import theme from "@/styles/theme";
+import { persistor, store } from "../redux/store";
+import refreshAccessToken from "./api/refreshAccessToken";
+import verifyRole from "./api/verifyRole";
 import { NextPage } from "next";
 import { ReactElement, ReactNode } from "react";
 
@@ -17,13 +20,9 @@ export type NextPageWithLayout = NextPage & {
 type AppPropsWithLayout = AppProps & {
   Component: NextPageWithLayout;
 };
-import { persistor, store } from "../redux/store";
-import refreshAccessToken from "./api/refreshAccessToken";
-import verifyRole from "./api/verifyRole";
 
 export default function App({ Component, pageProps }: AppPropsWithLayout) {
   const getLayout = Component.getLayout ?? ((page: ReactElement) => page);
-
   const router = useRouter();
 
   useEffect(() => {
@@ -36,15 +35,13 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
         router.push("/");
       }
     }
-  }, [Component, pageProps]);
+  }, [Component, pageProps, router]);
 
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <ThemeProvider theme={theme}>
-          <BackOfficeLayout>
-            {getLayout(<Component {...pageProps} />)}
-          </BackOfficeLayout>
+          {getLayout(<Component {...pageProps} />)}
         </ThemeProvider>
       </PersistGate>
     </Provider>

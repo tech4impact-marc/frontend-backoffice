@@ -1,8 +1,9 @@
 import SearchIcon from "@mui/icons-material/Search";
 import StickyHeadTableUser1 from "@/components/styledComponents/StyledTableUser1";
 import { Pagination, IconButton, TextField, Container } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { ReactElement, useEffect, useState } from "react";
 import axios from "axios";
+import BackOfficeLayout from "@/components/layout/BackOfficeLayout";
 
 const columns: string[] = ["유저 ID", "닉네임", "이메일", "전화번호", "Signup"];
 
@@ -24,6 +25,7 @@ export default function AllUsers() {
     }
 
     try {
+      console.log("params", params);
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/users`,
         {
@@ -74,6 +76,7 @@ export default function AllUsers() {
       <Container
         sx={{
           alignItems: "flex-start",
+          maxWidth: "none",
           width: "100%",
           height: "100%",
           flex: "1 0 0",
@@ -112,3 +115,7 @@ export default function AllUsers() {
     </React.Fragment>
   );
 }
+
+AllUsers.getLayout = (page: ReactElement) => (
+  <BackOfficeLayout>{page}</BackOfficeLayout>
+);
