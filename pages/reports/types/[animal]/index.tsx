@@ -284,7 +284,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   try {
     const reportTypeResponse = await axios.get(
-      `${process.env.NEXT_PUBLIC_IP_ADDRESS}/reports/types/${selectedAnimal}`,
+      `${process.env.NEXT_PUBLIC_IP_ADDRESS}/reports/types/${selectedAnimal}`, //보류 for kakao login
       setOrigin
     );
     const reportType: Animal = await reportTypeResponse.data;
