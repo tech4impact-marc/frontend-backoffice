@@ -2,9 +2,9 @@ import SearchIcon from "@mui/icons-material/Search";
 import StickyHeadTableUser1 from "@/components/styledComponents/StyledTableUser1";
 import { Pagination, IconButton, TextField, Container } from "@mui/material";
 import React, { ReactElement, useEffect, useState } from "react";
-import axios from "axios";
 import BackOfficeLayout from "@/components/layout/BackOfficeLayout";
 import { StyledDivHeader } from "@/components/styledComponents/StyledContainer";
+import instance from "@/utils/axios_interceptor";
 
 const columns: string[] = ["유저 ID", "닉네임", "이메일", "전화번호", "Signup"];
 
@@ -27,7 +27,7 @@ export default function AllUsers() {
 
     try {
       console.log("params", params);
-      const response = await axios.get(
+      const response = await instance.get(
         `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/users`,
         {
           params: params,

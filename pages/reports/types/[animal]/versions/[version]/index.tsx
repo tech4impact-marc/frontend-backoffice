@@ -1,4 +1,3 @@
-import axios from "axios";
 import { GetServerSideProps } from "next";
 import { ReportTypeVersionSimpleResponseDto } from "../..";
 import { useRouter } from "next/router";
@@ -23,6 +22,7 @@ import {
   ReportResponseTable,
   responseToCsvData,
 } from "@/components/styledComponents/ReportResponseTable";
+import instance from "@/utils/axios_interceptor";
 
 interface ReportDto {
   id: number;
@@ -145,11 +145,11 @@ const ReportVersion = ({
 
   const handlePublish = async () => {
     try {
-      const publishResponse = await axios.post(
+      const publishResponse = await instance.post(
         `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/types/${query.animal}/versions/${query.version}/publish`
       );
       if (publishResponse.status === 200) {
-        const copyResponse = await axios.post(
+        const copyResponse = await instance.post(
           `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/types/${query.animal}/versions/${query.version}/duplicate`
         );
         if (copyResponse.status === 200) {
@@ -171,7 +171,7 @@ const ReportVersion = ({
   }: {
     data: { type: string; orders: number[] };
   }) => {
-    axios
+    instance
       .put(
         `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/types/${query.animal}/versions/${query.version}/questions/order`,
         data
@@ -202,7 +202,7 @@ const ReportVersion = ({
       title: `질문 ${questionOrder} 제목`,
       description: `질문 ${questionOrder} 설명`,
     };
-    axios
+    instance
       .post(
         `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/types/${query.animal}/versions/${query.version}/questions`,
         initQuestion
@@ -308,19 +308,19 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 
   try {
-    const reportTypeResponse = await axios.get(
+    const reportTypeResponse = await instance.get(
       `${process.env.NEXT_PUBLIC_IP_ADDRESS}/reports/types/${selectedAnimal}`,
       setOrigin
     );
     const title = await reportTypeResponse.data.subject;
 
-    const reportTypeVersionResponse = await axios.get(
+    const reportTypeVersionResponse = await instance.get(
       `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/types/${selectedAnimal}/versions/${selectedVersion}`,
       setOrigin
     );
     const reportTypeVersion = await reportTypeVersionResponse.data;
 
-    const reportsResponse = await axios.get(
+    const reportsResponse = await instance.get(
       `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/full?reportType=${selectedAnimal}&reportTypeVersion=${selectedVersion}`,
       setOrigin
     );

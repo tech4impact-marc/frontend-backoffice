@@ -16,7 +16,7 @@ import {
 } from "@mui/material";
 import React, { ReactElement, useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import axios from "axios";
+import instance from "@/utils/axios_interceptor";
 
 //import dataResponse from "@/pages/user/contents";
 
@@ -56,7 +56,7 @@ export default function User() {
     }
 
     try {
-      const response = await axios.get(
+      const response = await instance.get(
         `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports`,
         {
           params: params,
@@ -109,7 +109,7 @@ export default function User() {
         profileIsDefaultImage: false,
       };
 
-      const response = await axios.patch(
+      const response = await instance.patch(
         `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/users/${userInfo.userId}`,
         updatedUserInfo
       );
@@ -144,7 +144,7 @@ export default function User() {
     }
     const fetchData = async () => {
       try {
-        const response = await axios.get(
+        const response = await instance.get(
           `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/users`,
           {
             params: {

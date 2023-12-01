@@ -10,6 +10,7 @@ import {
   ImageAnswerType,
   UpdateAnswersType,
 } from "@/components/post/AnswerChoice";
+import { getUrl, validUrl } from "@/utils/image";
 
 interface ImageAnswerProps {
   currentAnswer: ImageAnswerType[];
@@ -43,32 +44,6 @@ const ImageAnswer: React.FC<ImageAnswerProps> = ({
     };
     updateAnswers([newImage, ...currentAnswer]);
     setImageID((prev) => prev + 1);
-  };
-  const getUrl = (imageUrl: string | File) => {
-    if (typeof imageUrl === "object" && imageUrl instanceof File) {
-      return URL.createObjectURL(imageUrl);
-    }
-    if (imageUrl.startsWith("http://") || imageUrl.startsWith("https://")) {
-      return imageUrl;
-    }
-    return `https://${imageUrl}`;
-  };
-  const validUrl = (imageUrl: string | File | undefined) => {
-    if (imageUrl === undefined) {
-      return false;
-    }
-    if (typeof imageUrl === "object" && imageUrl instanceof File) {
-      return true;
-    }
-    if (
-      process.env.NEXT_PUBLIC_IMAGE_DOMAINS &&
-      process.env.NEXT_PUBLIC_IMAGE_DOMAINS.split(",").includes(
-        new URL(getUrl(imageUrl)).hostname
-      )
-    ) {
-      return true;
-    }
-    return false;
   };
 
   const containerStyle = {

@@ -1,4 +1,3 @@
-import axios from "axios";
 import { GetServerSideProps } from "next";
 import { Animal } from "../reports/types";
 import React, {
@@ -29,6 +28,7 @@ import {
 import { ReportTypeVersionSimpleResponseDto } from "../reports/types/[animal]";
 import { responseToCsvData } from "@/components/styledComponents/ReportResponseTable";
 import { useRouter } from "next/router";
+import instance from "@/utils/axios_interceptor";
 
 export interface SpecificReportResponseDto {
   id: number;
@@ -83,7 +83,7 @@ const Post = ({
         value: postInfo.value,
         modifiedReason: postInfo.modifiedReason,
       };
-      const response = await axios.patch(
+      const response = await instance.patch(
         `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/posts/${postInfo.postId}`,
         updatedPostInfo
       );
@@ -120,7 +120,7 @@ const Post = ({
       }
     });
 
-    axios
+    instance
       .patch(
         `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/${report.id}/answers`,
         formData,
@@ -408,19 +408,19 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 
   try {
-    const postResponse = await axios.get(
+    const postResponse = await instance.get(
       `${process.env.NEXT_PUBLIC_IP_ADDRESS}/posts/${context.query.post}`,
       setOrigin
     );
     const post = await postResponse.data;
 
-    const reportResponse = await axios.get(
+    const reportResponse = await instance.get(
       `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/${post.reportId}`,
       setOrigin
     );
     const report: SpecificReportResponseDto = await reportResponse.data;
 
-    const reportTypeVersionResponse = await axios.get(
+    const reportTypeVersionResponse = await instance.get(
       `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/types/${report.reportTypeVersion.reportType.id}/versions/${report.reportTypeVersion.id}`,
       setOrigin
     );

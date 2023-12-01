@@ -1,6 +1,5 @@
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import { Backdrop, Button, Grid, Typography } from "@mui/material";
-import axios from "axios";
 import { useRouter } from "next/router";
 import { ReactElement, useEffect, useState } from "react";
 import React from "react";
@@ -12,6 +11,8 @@ import BackOfficeLayout, {
 import { GetServerSideProps } from "next";
 import theme from "@/styles/theme";
 import Image from "next/image";
+import { validUrl } from "@/utils/image";
+import instance from "@/utils/axios_interceptor";
 
 export interface Animal {
   id: number;
@@ -87,7 +88,7 @@ const BackOfficeForm = ({ animals }: { animals: Animal[] }) => {
               <Typography variant="h3">{subject}</Typography>
 
               <Image
-                src={thumbnailUrl ? thumbnailUrl : "/marc_logo.png"}
+                src={validUrl(thumbnailUrl) ? thumbnailUrl : "/marc_logo.png"}
                 alt={"animal icon"}
                 width={80}
                 height={80}
@@ -108,7 +109,7 @@ BackOfficeForm.getLayout = (page: ReactElement) => (
 
 export const getServerSideProps: GetServerSideProps = async () => {
   try {
-    const animalResponse = await axios.get(
+    const animalResponse = await instance.get(
       `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/types`,
       {
         headers: {

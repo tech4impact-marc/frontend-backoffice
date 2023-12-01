@@ -9,7 +9,6 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import axios from "axios";
 import { useRouter } from "next/router";
 import { ReactElement, useEffect, useMemo, useState } from "react";
 import React from "react";
@@ -25,6 +24,7 @@ import {
 import { GetServerSideProps } from "next";
 import { Option, Question } from "../../..";
 import { QuestionChoice } from "@/components/report/reportQuestion/QuestionChoice";
+import instance from "@/utils/axios_interceptor";
 
 export const types = {
   SHORT_ANSWER: "단답형",
@@ -116,7 +116,7 @@ const BackOfficeForm = ({
   };
 
   const handleSubmit = () => {
-    axios
+    instance
       .put(
         `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/types/${query.animal}/versions/${query.version}/questions/${query.question}`,
         localQuestion
@@ -256,7 +256,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const selectedQuestion = context.query.question;
 
   try {
-    const reportTypeResponse = await axios.get(
+    const reportTypeResponse = await instance.get(
       `${process.env.NEXT_PUBLIC_IP_ADDRESS}/reports/types/${selectedAnimal}`,
       {
         headers: {
@@ -266,7 +266,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     );
     const title = await reportTypeResponse.data.subject;
 
-    const reportTypeVersionResponse = await axios.get(
+    const reportTypeVersionResponse = await instance.get(
       `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/types/${selectedAnimal}/versions/${selectedVersion}`,
       {
         headers: {
