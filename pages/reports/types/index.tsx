@@ -13,6 +13,7 @@ import theme from "@/styles/theme";
 import Image from "next/image";
 import { validUrl } from "@/utils/image";
 import instance from "@/utils/axios_interceptor";
+import { wrapper } from "@/redux/store";
 
 export interface Animal {
   id: number;
@@ -107,17 +108,19 @@ BackOfficeForm.getLayout = (page: ReactElement) => (
   <BackOfficeLayout>{page}</BackOfficeLayout>
 );
 
-export const getServerSideProps: GetServerSideProps = async () => {
-  try {
-    const animalResponse = await instance.get(`/admin/reports/types`, {
-      headers: {
-        Origin: `${process.env.NEXT_PUBLIC_FRONT_URL}`,
-      },
-    });
-    const animals: Animal[] = await animalResponse.data.contents;
+export const getServerSideProps: GetServerSideProps =
+  wrapper.getServerSideProps((store) => async (context) => {
+    try {
+      const animalResponse = await instance.get(`/admin/reports/types`, {
+        headers: {
+          Origin: `${process.env.NEXT_PUBLIC_FRONT_URL}`,
+          Authorization: `Bearer ${store.getState().tokens?.accessToken}`,
+        },
+      });
+      const animals: Animal[] = await animalResponse.data.contents;
 
-    return { props: { animals } };
-  } catch (error) {
-    return { props: {} };
-  }
-};
+      return { props: { animals: animals } };
+    } catch (error) {
+      return { props: { animals: [] } };
+    }
+  });
