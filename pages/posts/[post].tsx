@@ -55,77 +55,6 @@ const Post = () => {
   const [answers, setAnswers] = useState<AnswerType[][]>();
 
   useEffect(() => {
-    const returnAnswer = (questionID: number, questionType: string) => {
-      const loggedAnswers =
-        report.answers &&
-        report.answers
-          .filter((answer) => answer.question?.id == questionID)
-          .map(
-            (answer) =>
-              ({
-                value: answer.value,
-                type: questionType,
-                questionId: questionID,
-              } as AnswerType)
-          );
-
-      if (loggedAnswers.length === 0) {
-        switch (questionType) {
-          case "DATETIME":
-            return [
-              {
-                value: null,
-                type: questionType,
-                questionId: questionID,
-              } as DateTimeAnswerType,
-            ];
-          case "LOCATION":
-            return [
-              {
-                value: {
-                  latitude: 33.3846,
-                  longitude: 126.5535,
-                  address: "",
-                  addressDetail: "",
-                },
-                type: questionType,
-                questionId: questionID,
-              } as LocationAnswerType,
-            ];
-          case "IMAGE":
-          case "FILE":
-          case "VIDEO":
-            return [
-              {
-                value: { fileType: "IMAGE", fileKey: "" },
-                type: questionType,
-                questionId: questionID,
-              } as ImageAnswerType,
-            ];
-          case "SHORT_ANSWER":
-          case "LONG_ANSWER":
-          case "MULTIPLE_CHOICE(SINGLE)":
-          case "MULTIPLE_CHOICE(MULTI)":
-          default:
-            return [
-              {
-                value: "",
-                type: questionType,
-                questionId: questionID,
-              } as TextAnswerType,
-            ];
-        }
-      }
-      if (imageAnswerType.includes(questionType)) {
-        loggedAnswers.push({
-          value: { fileType: "IMAGE", fileKey: "" },
-          type: questionType,
-          questionId: questionID,
-        });
-      }
-      return loggedAnswers;
-    };
-
     async function load() {
       try {
         const postResponse = await instance.get(`/posts/${router.query.post}`);
@@ -143,20 +72,93 @@ const Post = () => {
         );
         const reportTypeVersion = await reportTypeVersionResponse.data;
         setReportTypeVersion(reportTypeVersion);
-        setAnswers(
-          reportTypeVersion &&
-            reportTypeVersion.questions &&
-            reportTypeVersion.questions.map(
-              (question: Question, index: number) =>
-                returnAnswer(question.id, question.type)
-            )
-        );
       } catch (error) {
         console.error(error);
       }
     }
     load();
   }, [router.query.post]);
+
+  const returnAnswer = (questionID: number, questionType: string) => {
+    const loggedAnswers =
+      report.answers &&
+      report.answers
+        .filter((answer) => answer.question?.id == questionID)
+        .map(
+          (answer) =>
+            ({
+              value: answer.value,
+              type: questionType,
+              questionId: questionID,
+            } as AnswerType)
+        );
+
+    if (loggedAnswers.length === 0) {
+      switch (questionType) {
+        case "DATETIME":
+          return [
+            {
+              value: null,
+              type: questionType,
+              questionId: questionID,
+            } as DateTimeAnswerType,
+          ];
+        case "LOCATION":
+          return [
+            {
+              value: {
+                latitude: 33.3846,
+                longitude: 126.5535,
+                address: "",
+                addressDetail: "",
+              },
+              type: questionType,
+              questionId: questionID,
+            } as LocationAnswerType,
+          ];
+        case "IMAGE":
+        case "FILE":
+        case "VIDEO":
+          return [
+            {
+              value: { fileType: "IMAGE", fileKey: "" },
+              type: questionType,
+              questionId: questionID,
+            } as ImageAnswerType,
+          ];
+        case "SHORT_ANSWER":
+        case "LONG_ANSWER":
+        case "MULTIPLE_CHOICE(SINGLE)":
+        case "MULTIPLE_CHOICE(MULTI)":
+        default:
+          return [
+            {
+              value: "",
+              type: questionType,
+              questionId: questionID,
+            } as TextAnswerType,
+          ];
+      }
+    }
+    if (imageAnswerType.includes(questionType)) {
+      loggedAnswers.push({
+        value: { fileType: "IMAGE", fileKey: "" },
+        type: questionType,
+        questionId: questionID,
+      });
+    }
+    return loggedAnswers;
+  };
+
+  useEffect(() => {
+    setAnswers(
+      reportTypeVersion &&
+        reportTypeVersion.questions &&
+        reportTypeVersion.questions.map((question: Question, index: number) =>
+          returnAnswer(question.id, question.type)
+        )
+    );
+  }, [reportTypeVersion]);
 
   console.log(reportTypeVersion, report, post, answers);
   const formData = useMemo(() => new FormData(), []);
