@@ -232,6 +232,7 @@ export default function User() {
                 variant="standard"
                 name={"subtitle"}
                 value={userInfo.signup}
+                disabled
               />
             </StyledContainerThree>
             <StyledContainerThree></StyledContainerThree>
@@ -292,7 +293,7 @@ export default function User() {
         <Container
           color="primary"
           sx={{
-            position: "absolute",
+            position: "fixed",
             left: "calc(32px+3rem)",
             bottom: "32px",
             width: "240px",
