@@ -20,7 +20,6 @@ import {
 } from "@/components/styledComponents/StyledContainer";
 import Image from "next/image";
 import { BasicTable } from "@/components/styledComponents/ReportVersionTable";
-import { GetServerSideProps } from "next";
 import { Animal } from "..";
 import NewIconOverlay from "@/components/report/NewIconOverlay";
 import { validUrl } from "@/utils/image";
@@ -60,13 +59,41 @@ export interface Option {
   value: string;
 }
 
-const BackOfficeForm = ({
-  reportType,
-  reportTypeVersion,
-}: {
-  reportType: Animal;
-  reportTypeVersion: ReportTypeVersionsResponseDto;
-}) => {
+const BackOfficeForm = () => {
+  const [reportType, setReportType] = useState<Animal>();
+  const [reportTypeVersion, setReportTypeVersion] =
+    useState<ReportTypeVersionsResponseDto>();
+
+  useEffect(() => {
+    async function load() {
+      const setOrigin = {
+        headers: {
+          Origin: `${process.env.NEXT_PUBLIC_FRONT_URL}`,
+        },
+      };
+      const selectedAnimal = router.query.animal;
+
+      try {
+        const reportTypeResponse = await instance.get(
+          `/reports/types/${selectedAnimal}`, //보류 for kakao login
+          setOrigin
+        );
+        const reportType: Animal = await reportTypeResponse.data;
+        setReportType(reportType);
+
+        const reportTypeVersionResponse = await instance.get(
+          `/admin/reports/types/${selectedAnimal}/versions`,
+          setOrigin
+        );
+        const reportTypeVersion = await reportTypeVersionResponse.data;
+        setReportTypeVersion(reportTypeVersion);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    load();
+  }, []);
+
   const router = useRouter();
   const selectedAnimal = useMemo(
     () => parseInt(router.query.animal as string),
@@ -74,8 +101,9 @@ const BackOfficeForm = ({
   );
   const [openBackdrop, setOpenBackdrop] = useState<boolean>(false);
 
-  const [localResponseType, setLocalResponseType] =
-    useState<Animal>(reportType);
+  const [localResponseType, setLocalResponseType] = useState<Animal>(
+    reportType as Animal
+  );
   const [updates, setUpdates] = useState<number>(0);
   console.log(reportType, reportTypeVersion);
 
@@ -110,7 +138,7 @@ const BackOfficeForm = ({
   };
 
   const handleNewVersion = async () => {
-    const newAnimal = reportType.subject;
+    const newAnimal = reportType?.subject;
     const initData = {
       label: newAnimal,
       subject: newAnimal,
@@ -283,30 +311,3 @@ const BackOfficeForm = ({
 export default BackOfficeForm;
 
 BackOfficeForm.getLayout = (page: ReactElement) => <>{page}</>;
-
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const setOrigin = {
-    headers: {
-      Origin: `${process.env.NEXT_PUBLIC_FRONT_URL}`,
-    },
-  };
-  const selectedAnimal = context.query.animal;
-
-  try {
-    const reportTypeResponse = await instance.get(
-      `/reports/types/${selectedAnimal}`, //보류 for kakao login
-      setOrigin
-    );
-    const reportType: Animal = await reportTypeResponse.data;
-
-    const reportTypeVersionResponse = await instance.get(
-      `/admin/reports/types/${selectedAnimal}/versions`,
-      setOrigin
-    );
-    const reportTypeVersion = await reportTypeVersionResponse.data;
-
-    return { props: { reportType, reportTypeVersion } };
-  } catch (error) {
-    return { props: {} };
-  }
-};

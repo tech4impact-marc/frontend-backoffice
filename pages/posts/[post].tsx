@@ -1,4 +1,3 @@
-import { GetServerSideProps } from "next";
 import { Animal } from "../reports/types";
 import React, {
   ReactElement,
@@ -40,15 +39,52 @@ export interface SpecificReportResponseDto {
 
 const imageAnswerType = ["IMAGE", "FILE", "VIDEO"];
 
-const Post = ({
-  report,
-  reportTypeVersion,
-  post,
-}: {
-  report: SpecificReportResponseDto;
-  reportTypeVersion: ReportTypeVersionSimpleResponseDto;
-  post: any;
-}) => {
+const Post = () => {
+  const [report, setReport] = useState<SpecificReportResponseDto>(
+    {} as SpecificReportResponseDto
+  );
+  const [reportTypeVersion, setReportTypeVersion] =
+    useState<ReportTypeVersionSimpleResponseDto>(
+      {} as ReportTypeVersionSimpleResponseDto
+    );
+  const [post, setPost] = useState<any>();
+
+  useEffect(() => {
+    async function load() {
+      const setOrigin = {
+        headers: {
+          Origin: `${process.env.NEXT_PUBLIC_FRONT_URL}`,
+        },
+      };
+
+      try {
+        const postResponse = await instance.get(
+          `/posts/${router.query.post}`,
+          setOrigin
+        );
+        const post = await postResponse.data;
+        setPost(post);
+
+        const reportResponse = await instance.get(
+          `/admin/reports/${post.reportId}`,
+          setOrigin
+        );
+        const report: SpecificReportResponseDto = await reportResponse.data;
+        setReport(report);
+
+        const reportTypeVersionResponse = await instance.get(
+          `/admin/reports/types/${report.reportTypeVersion.reportType.id}/versions/${report.reportTypeVersion.id}`,
+          setOrigin
+        );
+        const reportTypeVersion = await reportTypeVersionResponse.data;
+        setReportTypeVersion(reportTypeVersion);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    load();
+  }, []);
+
   console.log(reportTypeVersion, report, post);
   const router = useRouter();
   const formData = useMemo(() => new FormData(), []);
@@ -399,35 +435,3 @@ export default Post;
 Post.getLayout = (page: ReactElement) => (
   <BackOfficeLayout>{page}</BackOfficeLayout>
 );
-
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const setOrigin = {
-    headers: {
-      Origin: `${process.env.NEXT_PUBLIC_FRONT_URL}`,
-    },
-  };
-
-  try {
-    const postResponse = await instance.get(
-      `/posts/${context.query.post}`,
-      setOrigin
-    );
-    const post = await postResponse.data;
-
-    const reportResponse = await instance.get(
-      `/admin/reports/${post.reportId}`,
-      setOrigin
-    );
-    const report: SpecificReportResponseDto = await reportResponse.data;
-
-    const reportTypeVersionResponse = await instance.get(
-      `/admin/reports/types/${report.reportTypeVersion.reportType.id}/versions/${report.reportTypeVersion.id}`,
-      setOrigin
-    );
-    const reportTypeVersion = await reportTypeVersionResponse.data;
-
-    return { props: { report, reportTypeVersion, post } };
-  } catch (error) {
-    return { props: {} };
-  }
-};

@@ -1,7 +1,9 @@
-import { GetServerSideProps } from "next";
-import { ReportTypeVersionSimpleResponseDto } from "../..";
+import {
+  ReportTypeVersionSimpleResponseDto,
+  ReportTypeVersionsResponseDto,
+} from "../..";
 import { useRouter } from "next/router";
-import React, { ReactElement, useMemo, useState } from "react";
+import React, { ReactElement, useEffect, useMemo, useState } from "react";
 import {
   StyledContainerOne,
   StyledContainerThree,
@@ -113,15 +115,49 @@ const StyledTab = styled((props: StyledTabProps) => (
   },
 }));
 
-const ReportVersion = ({
-  reportTypeVersion,
-  reports,
-  title,
-}: {
-  reportTypeVersion: ReportTypeVersionSimpleResponseDto;
-  reports: ReportResponseDto;
-  title: string;
-}) => {
+const ReportVersion = () => {
+  const [title, setTitle] = useState<string>("");
+  const [reports, setReports] = useState<ReportResponseDto>();
+  const [reportTypeVersion, setReportTypeVersion] =
+    useState<ReportTypeVersionSimpleResponseDto>();
+
+  useEffect(() => {
+    async function load() {
+      const selectedAnimal = router.query.animal;
+      const selectedVersion = router.query.version;
+      const setOrigin = {
+        headers: {
+          Origin: `${process.env.NEXT_PUBLIC_FRONT_URL}`,
+        },
+      };
+      try {
+        const reportTypeResponse = await instance.get(
+          `/reports/types/${selectedAnimal}`,
+          setOrigin
+        );
+        const title = await reportTypeResponse.data.subject;
+        setTitle(title);
+
+        const reportTypeVersionResponse = await instance.get(
+          `/admin/reports/types/${selectedAnimal}/versions/${selectedVersion}`,
+          setOrigin
+        );
+        const reportTypeVersion = await reportTypeVersionResponse.data;
+        setReportTypeVersion(reportTypeVersion);
+
+        const reportsResponse = await instance.get(
+          `/admin/reports/full?reportType=${selectedAnimal}&reportTypeVersion=${selectedVersion}`,
+          setOrigin
+        );
+        const reports = await reportsResponse.data;
+        setReports(reports);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    load();
+  }, []);
+
   console.log(reportTypeVersion, reports);
   const { data: csvData, headers: csvHeaders } = useMemo(
     () =>
@@ -190,6 +226,7 @@ const ReportVersion = ({
 
   const handleNewQuestion = () => {
     const questionOrder =
+      reportTypeVersion &&
       Math.max(
         ...reportTypeVersion.questions.map((question) => question.questionOrder)
       ) + 1;
@@ -231,12 +268,12 @@ const ReportVersion = ({
       >
         <StyledDivHeader>
           <Typography variant="h2">
-            리포트 버전 {reportTypeVersion.versionNumber}
+            리포트 버전 {reportTypeVersion?.versionNumber}
           </Typography>
           <StyledButton
             onClick={handlePublish}
             sx={{ marginLeft: "auto" }}
-            disabled={reportTypeVersion.published}
+            disabled={reportTypeVersion?.published}
           >
             배포하기
           </StyledButton>
@@ -246,7 +283,7 @@ const ReportVersion = ({
       <StyledContainerOne style={{ padding: "0" }}>
         <StyledTabs value={tab} onChange={handleTabChange}>
           <StyledTab label="질문" />
-          {reportTypeVersion.published && <StyledTab label="응답" />}
+          {reportTypeVersion?.published && <StyledTab label="응답" />}
         </StyledTabs>
       </StyledContainerOne>
       {tab == 0 && (
@@ -263,19 +300,19 @@ const ReportVersion = ({
             <StyledButton
               onClick={handleNewQuestion}
               sx={{ marginLeft: "auto" }}
-              disabled={reportTypeVersion.published}
+              disabled={reportTypeVersion?.published}
             >
               질문 추가하기
             </StyledButton>
           </StyledDivHeader>
           <BasicDragQuestionsTable
-            published={reportTypeVersion.published}
-            responseTypeVersionQuestions={reportTypeVersion.questions}
+            published={reportTypeVersion ? reportTypeVersion.published : false}
+            responseTypeVersionQuestions={reportTypeVersion?.questions}
             handleNewOrder={handleNewOrder}
           />
         </StyledContainerOne>
       )}
-      {tab == 1 && reportTypeVersion.published && (
+      {tab == 1 && reportTypeVersion?.published && (
         <StyledContainerOne
           style={{
             backgroundColor: "white",
@@ -297,37 +334,3 @@ const ReportVersion = ({
 export default ReportVersion;
 
 ReportVersion.getLayout = (page: ReactElement) => <>{page}</>;
-
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const selectedAnimal = context.query.animal;
-  const selectedVersion = context.query.version;
-  const setOrigin = {
-    headers: {
-      Origin: `${process.env.NEXT_PUBLIC_FRONT_URL}`,
-    },
-  };
-
-  try {
-    const reportTypeResponse = await instance.get(
-      `/reports/types/${selectedAnimal}`,
-      setOrigin
-    );
-    const title = await reportTypeResponse.data.subject;
-
-    const reportTypeVersionResponse = await instance.get(
-      `/admin/reports/types/${selectedAnimal}/versions/${selectedVersion}`,
-      setOrigin
-    );
-    const reportTypeVersion = await reportTypeVersionResponse.data;
-
-    const reportsResponse = await instance.get(
-      `/admin/reports/full?reportType=${selectedAnimal}&reportTypeVersion=${selectedVersion}`,
-      setOrigin
-    );
-    const reports = await reportsResponse.data;
-
-    return { props: { reportTypeVersion, reports, title } };
-  } catch (error) {
-    return { props: {} };
-  }
-};
