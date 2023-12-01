@@ -23,7 +23,7 @@ import { Box } from "@mui/material";
 import CheckCircleOutlineRoundedIcon from "@mui/icons-material/CheckCircleOutlineRounded";
 import CancelRoundedIcon from "@mui/icons-material/CancelRounded";
 import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
-import axios from "axios";
+import instance from "@/utils/axios_interceptor";
 
 export const ReportResponseTable = ({
   csvHeaders,
@@ -43,8 +43,8 @@ export const ReportResponseTable = ({
       return;
     }
     if (confirm("리포트를 진짜 삭제하시겠습니까?")) {
-      axios
-        .delete(`${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/${id}`)
+      instance
+        .delete(`/admin/reports/${id}`)
         .then((response) => {
           if (response.status === 200) {
             setParsedData(parsedData.filter((row) => row.id !== id));
@@ -69,7 +69,7 @@ export const ReportResponseTable = ({
         `리포트를 ${row.isPublic ? "비공개로" : "공개로"} 바꾸시겠습니까?`
       )
     ) {
-      axios
+      instance
         .patch(`${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/${id}`, {
           isPublic: !row.isPublic,
         })

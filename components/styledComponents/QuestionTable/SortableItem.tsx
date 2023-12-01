@@ -7,7 +7,7 @@ import { useRouter } from "next/router";
 import DragHandleIcon from "@mui/icons-material/DragHandle";
 import { types } from "@/pages/reports/types/[animal]/versions/[version]/questions/[question]";
 import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
-import axios from "axios";
+import instance from "@/utils/axios_interceptor";
 
 export const SortableItem = ({
   row,
@@ -28,9 +28,9 @@ export const SortableItem = ({
 
   const handleDeleteQuestion = (id: number) => {
     if (confirm("질문을 진짜 삭제하시겠습니까?")) {
-      axios
+      instance
         .delete(
-          `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/types/${query.animal}/versions/${query.version}/questions/${id}`
+          `/admin/reports/types/${query.animal}/versions/${query.version}/questions/${id}`
         )
         .then((response) => {
           if (response.status !== 200) {

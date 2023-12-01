@@ -409,19 +409,19 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   try {
     const postResponse = await instance.get(
-      `${process.env.NEXT_PUBLIC_IP_ADDRESS}/posts/${context.query.post}`,
+      `/posts/${context.query.post}`,
       setOrigin
     );
     const post = await postResponse.data;
 
     const reportResponse = await instance.get(
-      `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/${post.reportId}`,
+      `/admin/reports/${post.reportId}`,
       setOrigin
     );
     const report: SpecificReportResponseDto = await reportResponse.data;
 
     const reportTypeVersionResponse = await instance.get(
-      `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/types/${report.reportTypeVersion.reportType.id}/versions/${report.reportTypeVersion.id}`,
+      `/admin/reports/types/${report.reportTypeVersion.reportType.id}/versions/${report.reportTypeVersion.id}`,
       setOrigin
     );
     const reportTypeVersion = await reportTypeVersionResponse.data;

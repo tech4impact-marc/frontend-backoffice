@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 
 import refreshAccessToken from "@/pages/api/refreshAccessToken";
 import { store } from "@/redux/store";
+import instance from "@/utils/axios_interceptor";
 
 export default function LogoutRedirectPage() {
   const router = useRouter();
@@ -14,16 +15,12 @@ export default function LogoutRedirectPage() {
       try {
         const jwtToken = await refreshAccessToken();
         console.log(jwtToken);
-        const response = await axios.post(
-          `${process.env.NEXT_PUBLIC_IP_ADDRESS}/auth/logout`,
-          null,
-          {
-            headers: {
-              Authorization: `Bearer ${jwtToken.accessToken}`,
-            },
-            withCredentials: true,
-          }
-        );
+        const response = await instance.post(`/auth/logout`, null, {
+          headers: {
+            Authorization: `Bearer ${jwtToken.accessToken}`,
+          },
+          withCredentials: true,
+        });
         if (response.status !== 200) {
           throw new Error("Network response was not ok");
         }
