@@ -48,6 +48,13 @@ const BackOfficeForm = () => {
       const selectedAnimal = router.query.animal;
       const selectedVersion = router.query.version;
       const selectedQuestion = router.query.question;
+      if (
+        selectedAnimal === undefined ||
+        selectedVersion === undefined ||
+        selectedQuestion === undefined
+      ) {
+        return;
+      }
 
       try {
         const reportTypeResponse = await instance.get(

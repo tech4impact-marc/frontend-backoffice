@@ -56,6 +56,9 @@ const Post = () => {
 
   useEffect(() => {
     async function load() {
+      if (router.query.post === undefined) {
+        return;
+      }
       try {
         const postResponse = await instance.get(`/posts/${router.query.post}`);
         const post = await postResponse.data;
@@ -151,12 +154,13 @@ const Post = () => {
   };
 
   useEffect(() => {
+    if (!reportTypeVersion || !reportTypeVersion.questions) {
+      return;
+    }
     setAnswers(
-      reportTypeVersion &&
-        reportTypeVersion.questions &&
-        reportTypeVersion.questions.map((question: Question, index: number) =>
-          returnAnswer(question.id, question.type)
-        )
+      reportTypeVersion.questions.map((question: Question, index: number) =>
+        returnAnswer(question.id, question.type)
+      )
     );
   }, [reportTypeVersion]);
 
@@ -194,7 +198,7 @@ const Post = () => {
         modifiedReason: postInfo.modifiedReason,
       };
       const response = await instance.patch(
-        `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/posts/${postInfo.postId}`,
+        `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/posts/${post.id}`,
         updatedPostInfo
       );
 
