@@ -5,7 +5,6 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import axios from "axios";
 import { useRouter } from "next/router";
 import { ReactElement, useEffect, useMemo, useState } from "react";
 import React from "react";
@@ -24,6 +23,8 @@ import { BasicTable } from "@/components/styledComponents/ReportVersionTable";
 import { GetServerSideProps } from "next";
 import { Animal } from "..";
 import NewIconOverlay from "@/components/report/NewIconOverlay";
+import { validUrl } from "@/utils/image";
+import instance from "@/utils/axios_interceptor";
 
 export interface ReportTypeVersionSimpleResponseDto {
   id: number;
@@ -90,7 +91,7 @@ const BackOfficeForm = ({
   };
 
   const handleSubmit = () => {
-    axios
+    instance
       .patch(
         `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/types/${selectedAnimal}`,
         localResponseType
@@ -152,7 +153,7 @@ const BackOfficeForm = ({
         },
       ],
     };
-    axios
+    instance
       .post(
         `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/types/${selectedAnimal}/versions`,
         initVersionData
@@ -210,7 +211,7 @@ const BackOfficeForm = ({
           >
             <Image
               src={
-                localResponseType.thumbnailUrl
+                validUrl(localResponseType.thumbnailUrl)
                   ? localResponseType.thumbnailUrl
                   : "/marc_logo.png"
               }
@@ -298,13 +299,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const selectedAnimal = context.query.animal;
 
   try {
-    const reportTypeResponse = await axios.get(
+    const reportTypeResponse = await instance.get(
       `${process.env.NEXT_PUBLIC_IP_ADDRESS}/reports/types/${selectedAnimal}`, //보류 for kakao login
       setOrigin
     );
     const reportType: Animal = await reportTypeResponse.data;
 
-    const reportTypeVersionResponse = await axios.get(
+    const reportTypeVersionResponse = await instance.get(
       `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/types/${selectedAnimal}/versions`,
       setOrigin
     );
