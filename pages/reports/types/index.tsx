@@ -8,7 +8,6 @@ import NewReportOverlay from "@/components/report/NewReportOverlay";
 import BackOfficeLayout, {
   StyledButton,
 } from "@/components/layout/BackOfficeLayout";
-import { GetServerSideProps } from "next";
 import theme from "@/styles/theme";
 import Image from "next/image";
 import { validUrl } from "@/utils/image";
@@ -77,6 +76,9 @@ const BackOfficeForm = () => {
           if (response.status === 200) {
             setAnimals(response.data.contents);
           }
+        })
+        .catch((error) => {
+          alert("에러");
         });
     }
     load();

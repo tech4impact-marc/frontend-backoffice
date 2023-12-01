@@ -21,7 +21,6 @@ import {
   StyledContainerThree,
   StyledDivHeader,
 } from "@/components/styledComponents/StyledContainer";
-import { GetServerSideProps } from "next";
 import { Option, Question } from "../../..";
 import { QuestionChoice } from "@/components/report/reportQuestion/QuestionChoice";
 import instance from "@/utils/axios_interceptor";
@@ -37,18 +36,57 @@ export const types = {
   IMAGE: "이미지",
 };
 
-const BackOfficeForm = ({
-  question,
-  published,
-  title,
-}: {
-  question: Question;
-  published: boolean;
-  title: string;
-}) => {
+const BackOfficeForm = () => {
+  const [question, setQuestion] = useState<Question>();
+  const [published, setPublished] = useState<boolean>();
+  const [title, setTitle] = useState<string>("");
+
+  useEffect(() => {
+    async function load() {
+      const selectedAnimal = router.query.animal;
+      const selectedVersion = router.query.version;
+      const selectedQuestion = router.query.question;
+
+      try {
+        const reportTypeResponse = await instance.get(
+          `/reports/types/${selectedAnimal}`,
+          {
+            headers: {
+              Origin: `${process.env.NEXT_PUBLIC_FRONT_URL}`,
+            },
+          }
+        );
+        const title = await reportTypeResponse.data.subject;
+        setTitle(title);
+
+        const reportTypeVersionResponse = await instance.get(
+          `/admin/reports/types/${selectedAnimal}/versions/${selectedVersion}`,
+          {
+            headers: {
+              Origin: `${process.env.NEXT_PUBLIC_FRONT_URL}`,
+            },
+          }
+        );
+        const question = await reportTypeVersionResponse.data.questions.find(
+          (question: Question) => question.id.toString() === selectedQuestion
+        );
+        setQuestion(question);
+        const published = await reportTypeVersionResponse.data.published;
+        setPublished(published);
+
+        return { props: { title, question, published } };
+      } catch (error) {
+        return { props: {} };
+      }
+    }
+    load();
+  });
+
   const router = useRouter();
   const { query } = router;
-  const [localQuestion, setLocalQuestion] = useState<Question>(question);
+  const [localQuestion, setLocalQuestion] = useState<Question>(
+    question as Question
+  );
   const [updates, setUpdates] = useState<number>(0);
   console.log(question);
 
@@ -235,7 +273,7 @@ const BackOfficeForm = ({
           <Typography variant="h2">질문 내용</Typography>
         </StyledDivHeader>
         <QuestionChoice
-          published={published}
+          published={published ? published : false}
           question={localQuestion}
           handleChangeOptions={handleChangeOptions}
           handleNewOption={handleNewOption}
@@ -249,38 +287,3 @@ const BackOfficeForm = ({
 export default BackOfficeForm;
 
 BackOfficeForm.getLayout = (page: ReactElement) => <>{page}</>;
-
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const selectedAnimal = context.query.animal;
-  const selectedVersion = context.query.version;
-  const selectedQuestion = context.query.question;
-
-  try {
-    const reportTypeResponse = await instance.get(
-      `/reports/types/${selectedAnimal}`,
-      {
-        headers: {
-          Origin: `${process.env.NEXT_PUBLIC_FRONT_URL}`,
-        },
-      }
-    );
-    const title = await reportTypeResponse.data.subject;
-
-    const reportTypeVersionResponse = await instance.get(
-      `/admin/reports/types/${selectedAnimal}/versions/${selectedVersion}`,
-      {
-        headers: {
-          Origin: `${process.env.NEXT_PUBLIC_FRONT_URL}`,
-        },
-      }
-    );
-    const question = await reportTypeVersionResponse.data.questions.find(
-      (question: Question) => question.id.toString() === selectedQuestion
-    );
-    const published = await reportTypeVersionResponse.data.published;
-
-    return { props: { title, question, published } };
-  } catch (error) {
-    return { props: {} };
-  }
-};
