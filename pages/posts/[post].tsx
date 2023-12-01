@@ -24,7 +24,10 @@ import {
   LocationAnswerType,
   TextAnswerType,
 } from "@/components/post/AnswerChoice";
-import { ReportTypeVersionSimpleResponseDto } from "../reports/types/[animal]";
+import {
+  Question,
+  ReportTypeVersionSimpleResponseDto,
+} from "../reports/types/[animal]";
 import { responseToCsvData } from "@/components/styledComponents/ReportResponseTable";
 import { useRouter } from "next/router";
 import instance from "@/utils/axios_interceptor";
@@ -79,6 +82,14 @@ const Post = () => {
         );
         const reportTypeVersion = await reportTypeVersionResponse.data;
         setReportTypeVersion(reportTypeVersion);
+        setAnswers(
+          reportTypeVersion &&
+            reportTypeVersion.questions &&
+            reportTypeVersion.questions.map(
+              (question: Question, index: number) =>
+                returnAnswer(question.id, question.type)
+            )
+        );
       } catch (error) {
         console.error(error);
       }
@@ -137,6 +148,9 @@ const Post = () => {
   };
 
   const handleModifyReport = () => {
+    if (answers === undefined) {
+      return;
+    }
     console.log(answers.flat().filter((answer) => answer.modified === true));
     formData.append(
       "data",
@@ -251,13 +265,7 @@ const Post = () => {
     return loggedAnswers;
   };
 
-  const [answers, setAnswers] = useState(
-    reportTypeVersion &&
-      reportTypeVersion.questions &&
-      reportTypeVersion.questions.map((question, index) =>
-        returnAnswer(question.id, question.type)
-      )
-  );
+  const [answers, setAnswers] = useState<AnswerType[][]>();
 
   const updateAnswers = useCallback(
     (questionIndex: number, newAnswers: AnswerType[]) => {
@@ -274,7 +282,7 @@ const Post = () => {
     [answers]
   );
 
-  if (!report) {
+  if (!report || !answers) {
     return <React.Fragment></React.Fragment>;
   }
 
