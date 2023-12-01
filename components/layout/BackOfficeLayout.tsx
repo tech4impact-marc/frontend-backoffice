@@ -87,7 +87,6 @@ export default function BackOfficeLayout({
 }) {
   const router = useRouter();
   const { pathname, query } = router;
-  console.log("layout", title);
 
   return (
     <div style={{ width: "100vw", height: "100vh" }}>

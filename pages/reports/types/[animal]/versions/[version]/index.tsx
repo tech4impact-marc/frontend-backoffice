@@ -156,7 +156,7 @@ const ReportVersion = () => {
     load();
   }, [router.query.animal, router.query.version]);
 
-  console.log(reportTypeVersion, reports);
+  // console.log(reportTypeVersion, reports);
   const { data: csvData, headers: csvHeaders } = useMemo(
     () =>
       reportTypeVersion && reports

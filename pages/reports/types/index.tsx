@@ -62,7 +62,7 @@ const BackOfficeForm = () => {
   const { pathname } = router;
   const [animals, setAnimals] = useState<Animal[]>();
 
-  console.log(animals);
+  // console.log(animals);
 
   useEffect(() => {
     async function load() {

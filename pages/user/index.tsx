@@ -26,7 +26,7 @@ export default function AllUsers() {
     }
 
     try {
-      console.log("params", params);
+      // console.log("params", params);
       const response = await instance.get(`/admin/users`, {
         params: params,
       });
@@ -39,7 +39,7 @@ export default function AllUsers() {
         Signup: user.createdDateTime,
       }));
 
-      console.log(newRows);
+      // console.log(newRows);
       setRows(newRows);
       setTotalNumberOfPages(response.data.totalNumberOfPages);
     } catch (error) {
