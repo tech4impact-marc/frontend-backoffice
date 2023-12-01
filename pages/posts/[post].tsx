@@ -52,33 +52,94 @@ const Post = () => {
     );
   const [post, setPost] = useState<any>();
   const router = useRouter();
+  const [answers, setAnswers] = useState<AnswerType[][]>();
 
   useEffect(() => {
-    async function load() {
-      const setOrigin = {
-        headers: {
-          Origin: `${process.env.NEXT_PUBLIC_FRONT_URL}`,
-        },
-      };
+    const returnAnswer = (questionID: number, questionType: string) => {
+      const loggedAnswers =
+        report.answers &&
+        report.answers
+          .filter((answer) => answer.question?.id == questionID)
+          .map(
+            (answer) =>
+              ({
+                value: answer.value,
+                type: questionType,
+                questionId: questionID,
+              } as AnswerType)
+          );
 
+      if (loggedAnswers.length === 0) {
+        switch (questionType) {
+          case "DATETIME":
+            return [
+              {
+                value: null,
+                type: questionType,
+                questionId: questionID,
+              } as DateTimeAnswerType,
+            ];
+          case "LOCATION":
+            return [
+              {
+                value: {
+                  latitude: 33.3846,
+                  longitude: 126.5535,
+                  address: "",
+                  addressDetail: "",
+                },
+                type: questionType,
+                questionId: questionID,
+              } as LocationAnswerType,
+            ];
+          case "IMAGE":
+          case "FILE":
+          case "VIDEO":
+            return [
+              {
+                value: { fileType: "IMAGE", fileKey: "" },
+                type: questionType,
+                questionId: questionID,
+              } as ImageAnswerType,
+            ];
+          case "SHORT_ANSWER":
+          case "LONG_ANSWER":
+          case "MULTIPLE_CHOICE(SINGLE)":
+          case "MULTIPLE_CHOICE(MULTI)":
+          default:
+            return [
+              {
+                value: "",
+                type: questionType,
+                questionId: questionID,
+              } as TextAnswerType,
+            ];
+        }
+      }
+      if (imageAnswerType.includes(questionType)) {
+        loggedAnswers.push({
+          value: { fileType: "IMAGE", fileKey: "" },
+          type: questionType,
+          questionId: questionID,
+        });
+      }
+      return loggedAnswers;
+    };
+
+    async function load() {
       try {
-        const postResponse = await instance.get(
-          `/posts/${router.query.post}`,
-          setOrigin
-        );
+        const postResponse = await instance.get(`/posts/${router.query.post}`);
         const post = await postResponse.data;
         setPost(post);
 
         const reportResponse = await instance.get(
-          `/admin/reports/${post.reportId}`,
-          setOrigin
+          `/admin/reports/${post.reportId}`
         );
         const report: SpecificReportResponseDto = await reportResponse.data;
         setReport(report);
 
         const reportTypeVersionResponse = await instance.get(
-          `/admin/reports/types/${report.reportTypeVersion.reportType.id}/versions/${report.reportTypeVersion.id}`,
-          setOrigin
+          `/admin/reports/types/${report.reportTypeVersion.reportType.id}/versions/${report.reportTypeVersion.id}`
         );
         const reportTypeVersion = await reportTypeVersionResponse.data;
         setReportTypeVersion(reportTypeVersion);
@@ -97,7 +158,7 @@ const Post = () => {
     load();
   }, [router.query.post]);
 
-  console.log(reportTypeVersion, report, post);
+  console.log(reportTypeVersion, report, post, answers);
   const formData = useMemo(() => new FormData(), []);
 
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
@@ -193,79 +254,6 @@ const Post = () => {
         console.log(error);
       });
   };
-
-  const returnAnswer = (questionID: number, questionType: string) => {
-    const loggedAnswers =
-      report.answers &&
-      report.answers
-        .filter((answer) => answer.question?.id == questionID)
-        .map(
-          (answer) =>
-            ({
-              value: answer.value,
-              type: questionType,
-              questionId: questionID,
-            } as AnswerType)
-        );
-
-    if (loggedAnswers.length === 0) {
-      switch (questionType) {
-        case "DATETIME":
-          return [
-            {
-              value: null,
-              type: questionType,
-              questionId: questionID,
-            } as DateTimeAnswerType,
-          ];
-        case "LOCATION":
-          return [
-            {
-              value: {
-                latitude: 33.3846,
-                longitude: 126.5535,
-                address: "",
-                addressDetail: "",
-              },
-              type: questionType,
-              questionId: questionID,
-            } as LocationAnswerType,
-          ];
-        case "IMAGE":
-        case "FILE":
-        case "VIDEO":
-          return [
-            {
-              value: { fileType: "IMAGE", fileKey: "" },
-              type: questionType,
-              questionId: questionID,
-            } as ImageAnswerType,
-          ];
-        case "SHORT_ANSWER":
-        case "LONG_ANSWER":
-        case "MULTIPLE_CHOICE(SINGLE)":
-        case "MULTIPLE_CHOICE(MULTI)":
-        default:
-          return [
-            {
-              value: "",
-              type: questionType,
-              questionId: questionID,
-            } as TextAnswerType,
-          ];
-      }
-    }
-    if (imageAnswerType.includes(questionType)) {
-      loggedAnswers.push({
-        value: { fileType: "IMAGE", fileKey: "" },
-        type: questionType,
-        questionId: questionID,
-      });
-    }
-    return loggedAnswers;
-  };
-
-  const [answers, setAnswers] = useState<AnswerType[][]>();
 
   const updateAnswers = useCallback(
     (questionIndex: number, newAnswers: AnswerType[]) => {
