@@ -1,4 +1,3 @@
-import { GetServerSideProps } from "next";
 import { Animal } from "../reports/types";
 import React, {
   ReactElement,
