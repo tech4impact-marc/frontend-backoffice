@@ -127,29 +127,22 @@ const ReportVersion = () => {
     async function load() {
       const selectedAnimal = router.query.animal;
       const selectedVersion = router.query.version;
-      const setOrigin = {
-        headers: {
-          Origin: `${process.env.NEXT_PUBLIC_FRONT_URL}`,
-        },
-      };
+
       try {
         const reportTypeResponse = await instance.get(
-          `/reports/types/${selectedAnimal}`,
-          setOrigin
+          `/reports/types/${selectedAnimal}`
         );
         const title = await reportTypeResponse.data.subject;
         setTitle(title);
 
         const reportTypeVersionResponse = await instance.get(
-          `/admin/reports/types/${selectedAnimal}/versions/${selectedVersion}`,
-          setOrigin
+          `/admin/reports/types/${selectedAnimal}/versions/${selectedVersion}`
         );
         const reportTypeVersion = await reportTypeVersionResponse.data;
         setReportTypeVersion(reportTypeVersion);
 
         const reportsResponse = await instance.get(
-          `/admin/reports/full?reportType=${selectedAnimal}&reportTypeVersion=${selectedVersion}`,
-          setOrigin
+          `/admin/reports/full?reportType=${selectedAnimal}&reportTypeVersion=${selectedVersion}`
         );
         const reports = await reportsResponse.data;
         setReports(reports);
@@ -166,7 +159,7 @@ const ReportVersion = () => {
       reportTypeVersion && reports
         ? responseToCsvData(reportTypeVersion.questions, reports.contents)
         : { data: null, headers: null },
-    []
+    [reportTypeVersion, reports]
   );
 
   const { pathname, query } = router;

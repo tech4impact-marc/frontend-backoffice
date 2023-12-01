@@ -62,21 +62,14 @@ const BackOfficeForm = () => {
         setTitle(title);
 
         const reportTypeVersionResponse = await instance.get(
-          `/admin/reports/types/${selectedAnimal}/versions/${selectedVersion}`,
-          {
-            headers: {
-              Origin: `${process.env.NEXT_PUBLIC_FRONT_URL}`,
-            },
-          }
+          `/admin/reports/types/${selectedAnimal}/versions/${selectedVersion}`
         );
         const question = await reportTypeVersionResponse.data.questions.find(
           (question: Question) => question.id.toString() === selectedQuestion
         );
-        setQuestion(question);
+        setLocalQuestion(question);
         const published = await reportTypeVersionResponse.data.published;
         setPublished(published);
-
-        return { props: { title, question, published } };
       } catch (error) {
         console.error(error);
       }

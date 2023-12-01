@@ -68,24 +68,18 @@ const BackOfficeForm = () => {
 
   useEffect(() => {
     async function load() {
-      const setOrigin = {
-        headers: {
-          Origin: `${process.env.NEXT_PUBLIC_FRONT_URL}`,
-        },
-      };
       const selectedAnimal = router.query.animal;
 
       try {
         const reportTypeResponse = await instance.get(
-          `/reports/types/${selectedAnimal}`, //보류 for kakao login
-          setOrigin
+          `/reports/types/${selectedAnimal}` //보류 for kakao login
         );
         const reportType: Animal = await reportTypeResponse.data;
         setReportType(reportType);
+        setLocalResponseType(reportType as Animal);
 
         const reportTypeVersionResponse = await instance.get(
-          `/admin/reports/types/${selectedAnimal}/versions`,
-          setOrigin
+          `/admin/reports/types/${selectedAnimal}/versions`
         );
         const reportTypeVersion = await reportTypeVersionResponse.data;
         setReportTypeVersion(reportTypeVersion);

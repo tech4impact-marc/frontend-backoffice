@@ -181,16 +181,18 @@ const Post = () => {
   };
 
   const returnAnswer = (questionID: number, questionType: string) => {
-    const loggedAnswers = report.answers
-      .filter((answer) => answer.question?.id == questionID)
-      .map(
-        (answer) =>
-          ({
-            value: answer.value,
-            type: questionType,
-            questionId: questionID,
-          } as AnswerType)
-      );
+    const loggedAnswers =
+      report.answers &&
+      report.answers
+        .filter((answer) => answer.question?.id == questionID)
+        .map(
+          (answer) =>
+            ({
+              value: answer.value,
+              type: questionType,
+              questionId: questionID,
+            } as AnswerType)
+        );
 
     if (loggedAnswers.length === 0) {
       switch (questionType) {
@@ -251,6 +253,7 @@ const Post = () => {
 
   const [answers, setAnswers] = useState(
     reportTypeVersion &&
+      reportTypeVersion.questions &&
       reportTypeVersion.questions.map((question, index) =>
         returnAnswer(question.id, question.type)
       )
@@ -259,10 +262,11 @@ const Post = () => {
   const updateAnswers = useCallback(
     (questionIndex: number, newAnswers: AnswerType[]) => {
       setAnswers((prevAnswers: AnswerType[][]) => {
-        const updatedAnswers = prevAnswers.map(
-          (prevAnswer: AnswerType[], index: number) =>
+        const updatedAnswers =
+          prevAnswers &&
+          prevAnswers.map((prevAnswer: AnswerType[], index: number) =>
             index === questionIndex ? (newAnswers as AnswerType[]) : prevAnswer
-        );
+          );
         return updatedAnswers;
       });
       setReportChanges(true);
@@ -384,24 +388,25 @@ const Post = () => {
           </StyledButton>
         </StyledDivHeader>
 
-        {reportTypeVersion.questions.map((question, index) => (
-          <StyledContainerThree
-            key={index}
-            style={{ width: "100%", rowGap: "1.5rem" }}
-          >
-            <Typography variant="h2">질문 {index + 1}</Typography>
-            <Typography variant="h3">{question.title}</Typography>
-            {/* {JSON.stringify(answers[index])} */}
-            <AnswerChoice
-              currentAnswer={answers[index]}
-              updateAnswers={(newAnswers: AnswerType[]) =>
-                updateAnswers(index, newAnswers)
-              }
-              questionType={question.type}
-              options={question.options}
-            />
-          </StyledContainerThree>
-        ))}
+        {reportTypeVersion.questions &&
+          reportTypeVersion.questions.map((question, index) => (
+            <StyledContainerThree
+              key={index}
+              style={{ width: "100%", rowGap: "1.5rem" }}
+            >
+              <Typography variant="h2">질문 {index + 1}</Typography>
+              <Typography variant="h3">{question.title}</Typography>
+              {/* {JSON.stringify(answers[index])} */}
+              <AnswerChoice
+                currentAnswer={answers[index]}
+                updateAnswers={(newAnswers: AnswerType[]) =>
+                  updateAnswers(index, newAnswers)
+                }
+                questionType={question.type}
+                options={question.options}
+              />
+            </StyledContainerThree>
+          ))}
       </StyledContainerOne>
       {showSuccessMessage && (
         <Container
