@@ -13,7 +13,6 @@ import theme from "@/styles/theme";
 import Image from "next/image";
 import { validUrl } from "@/utils/image";
 import instance from "@/utils/axios_interceptor";
-import { wrapper } from "@/redux/store";
 
 export interface Animal {
   id: number;
@@ -59,11 +58,29 @@ export const NewFormButton = () => {
   );
 };
 
-const BackOfficeForm = ({ animals }: { animals: Animal[] }) => {
+const BackOfficeForm = () => {
   const router = useRouter();
   const { pathname } = router;
+  const [animals, setAnimals] = useState<Animal[]>();
 
   console.log(animals);
+
+  useEffect(() => {
+    async function load() {
+      const animalResponse = await instance
+        .get(`/admin/reports/types`, {
+          headers: {
+            Origin: `${process.env.NEXT_PUBLIC_FRONT_URL}`,
+          },
+        })
+        .then((response) => {
+          if (response.status === 200) {
+            setAnimals(response.data.contents);
+          }
+        });
+    }
+    load();
+  }, []);
 
   return (
     <Grid container spacing={2}>
@@ -107,20 +124,3 @@ export default BackOfficeForm;
 BackOfficeForm.getLayout = (page: ReactElement) => (
   <BackOfficeLayout>{page}</BackOfficeLayout>
 );
-
-export const getServerSideProps: GetServerSideProps =
-  wrapper.getServerSideProps((store) => async (context) => {
-    try {
-      const animalResponse = await instance.get(`/admin/reports/types`, {
-        headers: {
-          Origin: `${process.env.NEXT_PUBLIC_FRONT_URL}`,
-          Authorization: `Bearer ${store.getState().tokens?.accessToken}`,
-        },
-      });
-      const animals: Animal[] = await animalResponse.data.contents;
-
-      return { props: { animals: animals } };
-    } catch (error) {
-      return { props: { animals: [] } };
-    }
-  });

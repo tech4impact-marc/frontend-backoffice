@@ -1,7 +1,6 @@
-import { createStore, Store } from "redux";
+import { createStore } from "redux";
 import { persistReducer, persistStore } from "redux-persist";
 import storage from "redux-persist/lib/storage";
-import { createWrapper, Context, HYDRATE } from "next-redux-wrapper";
 
 // 초기 상태
 const initialState = {
@@ -73,8 +72,3 @@ const store = createStore(persistedReducer);
 const persistor = persistStore(store);
 
 export { persistor, store };
-
-const makeStore = (context: Context) => createStore(persistedReducer);
-export const wrapper = createWrapper<Store<any>>(makeStore, {
-  debug: true,
-});
