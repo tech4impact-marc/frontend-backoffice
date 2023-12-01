@@ -116,6 +116,8 @@ const StyledTab = styled((props: StyledTabProps) => (
 }));
 
 const ReportVersion = () => {
+  const router = useRouter();
+
   const [title, setTitle] = useState<string>("");
   const [reports, setReports] = useState<ReportResponseDto>();
   const [reportTypeVersion, setReportTypeVersion] =
@@ -156,7 +158,7 @@ const ReportVersion = () => {
       }
     }
     load();
-  }, []);
+  }, [router.query.animal, router.query.version]);
 
   console.log(reportTypeVersion, reports);
   const { data: csvData, headers: csvHeaders } = useMemo(
@@ -167,7 +169,6 @@ const ReportVersion = () => {
     []
   );
 
-  const router = useRouter();
   const { pathname, query } = router;
 
   const [tab, setTab] = useState(0);

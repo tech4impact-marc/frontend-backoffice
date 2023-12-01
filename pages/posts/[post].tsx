@@ -48,6 +48,7 @@ const Post = () => {
       {} as ReportTypeVersionSimpleResponseDto
     );
   const [post, setPost] = useState<any>();
+  const router = useRouter();
 
   useEffect(() => {
     async function load() {
@@ -83,10 +84,9 @@ const Post = () => {
       }
     }
     load();
-  }, []);
+  }, [router.query.post]);
 
   console.log(reportTypeVersion, report, post);
-  const router = useRouter();
   const formData = useMemo(() => new FormData(), []);
 
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);

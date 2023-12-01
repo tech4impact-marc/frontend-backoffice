@@ -37,6 +37,8 @@ export const types = {
 };
 
 const BackOfficeForm = () => {
+  const router = useRouter();
+
   const [question, setQuestion] = useState<Question>();
   const [published, setPublished] = useState<boolean>();
   const [title, setTitle] = useState<string>("");
@@ -76,13 +78,12 @@ const BackOfficeForm = () => {
 
         return { props: { title, question, published } };
       } catch (error) {
-        return { props: {} };
+        console.error(error);
       }
     }
     load();
-  });
+  }, [router.query.animal, router.query.version, router.query.question]);
 
-  const router = useRouter();
   const { query } = router;
   const [localQuestion, setLocalQuestion] = useState<Question>(
     question as Question

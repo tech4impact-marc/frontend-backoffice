@@ -60,6 +60,8 @@ export interface Option {
 }
 
 const BackOfficeForm = () => {
+  const router = useRouter();
+
   const [reportType, setReportType] = useState<Animal>();
   const [reportTypeVersion, setReportTypeVersion] =
     useState<ReportTypeVersionsResponseDto>();
@@ -92,9 +94,8 @@ const BackOfficeForm = () => {
       }
     }
     load();
-  }, []);
+  }, [router.query.animal]);
 
-  const router = useRouter();
   const selectedAnimal = useMemo(
     () => parseInt(router.query.animal as string),
     [router.query.animal]
