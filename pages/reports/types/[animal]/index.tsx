@@ -103,7 +103,7 @@ const BackOfficeForm = () => {
     reportType as Animal
   );
   const [updates, setUpdates] = useState<number>(0);
-  console.log(reportType, reportTypeVersion);
+  // console.log(reportType, reportTypeVersion);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -121,7 +121,7 @@ const BackOfficeForm = () => {
       .patch(`/admin/reports/types/${selectedAnimal}`, localResponseType)
       .then((response) => {
         if (response.status == 200) {
-          console.log(response);
+          // console.log(response);
           alert("변경사항이 저장되었습니다");
         } else {
           console.log(response);

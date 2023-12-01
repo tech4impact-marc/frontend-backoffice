@@ -15,7 +15,6 @@ instance.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`;
       config.withCredentials = true;
     }
-    console.log(store.getState());
     return config;
   },
   (error: AxiosError | Error): Promise<AxiosError> => {

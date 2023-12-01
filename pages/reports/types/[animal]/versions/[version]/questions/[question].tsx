@@ -58,12 +58,7 @@ const BackOfficeForm = () => {
 
       try {
         const reportTypeResponse = await instance.get(
-          `/reports/types/${selectedAnimal}`,
-          {
-            headers: {
-              Origin: `${process.env.NEXT_PUBLIC_FRONT_URL}`,
-            },
-          }
+          `/reports/types/${selectedAnimal}`
         );
         const title = await reportTypeResponse.data.subject;
         setTitle(title);
@@ -89,7 +84,7 @@ const BackOfficeForm = () => {
     question as Question
   );
   const [updates, setUpdates] = useState<number>(0);
-  console.log(question);
+  // console.log(question);
 
   const handleChangeOptions = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
