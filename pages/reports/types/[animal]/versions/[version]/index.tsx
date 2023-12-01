@@ -146,11 +146,11 @@ const ReportVersion = ({
   const handlePublish = async () => {
     try {
       const publishResponse = await instance.post(
-        `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/types/${query.animal}/versions/${query.version}/publish`
+        `/admin/reports/types/${query.animal}/versions/${query.version}/publish`
       );
       if (publishResponse.status === 200) {
         const copyResponse = await instance.post(
-          `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/types/${query.animal}/versions/${query.version}/duplicate`
+          `/admin/reports/types/${query.animal}/versions/${query.version}/duplicate`
         );
         if (copyResponse.status === 200) {
           alert("성공적으로 배포했습니다.");
@@ -173,7 +173,7 @@ const ReportVersion = ({
   }) => {
     instance
       .put(
-        `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/types/${query.animal}/versions/${query.version}/questions/order`,
+        `/admin/reports/types/${query.animal}/versions/${query.version}/questions/order`,
         data
       )
       .then((response) => {
@@ -204,7 +204,7 @@ const ReportVersion = ({
     };
     instance
       .post(
-        `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/types/${query.animal}/versions/${query.version}/questions`,
+        `/admin/reports/types/${query.animal}/versions/${query.version}/questions`,
         initQuestion
       )
       .then((response) => {
@@ -309,19 +309,19 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   try {
     const reportTypeResponse = await instance.get(
-      `${process.env.NEXT_PUBLIC_IP_ADDRESS}/reports/types/${selectedAnimal}`,
+      `/reports/types/${selectedAnimal}`,
       setOrigin
     );
     const title = await reportTypeResponse.data.subject;
 
     const reportTypeVersionResponse = await instance.get(
-      `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/types/${selectedAnimal}/versions/${selectedVersion}`,
+      `/admin/reports/types/${selectedAnimal}/versions/${selectedVersion}`,
       setOrigin
     );
     const reportTypeVersion = await reportTypeVersionResponse.data;
 
     const reportsResponse = await instance.get(
-      `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/full?reportType=${selectedAnimal}&reportTypeVersion=${selectedVersion}`,
+      `/admin/reports/full?reportType=${selectedAnimal}&reportTypeVersion=${selectedVersion}`,
       setOrigin
     );
     const reports = await reportsResponse.data;

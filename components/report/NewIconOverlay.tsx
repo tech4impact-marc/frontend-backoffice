@@ -8,7 +8,6 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import axios from "axios";
 import { useRouter } from "next/router";
 import { useState } from "react";
 
@@ -19,6 +18,7 @@ import {
 } from "@/components/styledComponents/StyledContainer";
 import theme from "@/styles/theme";
 import { StyledButton } from "../layout/BackOfficeLayout";
+import instance from "@/utils/axios_interceptor";
 
 const NewIconOverlay = ({
   oldData,
@@ -38,8 +38,8 @@ const NewIconOverlay = ({
       thumbnailUrl: thumbnailURL, //https://drive.google.com/uc?id=id
     };
     try {
-      const firstResponse = await axios.patch(
-        `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/types/${router.query.animal}`,
+      const firstResponse = await instance.patch(
+        `/admin/reports/types/${router.query.animal}`,
         initData
       );
       if (firstResponse.status === 200) {

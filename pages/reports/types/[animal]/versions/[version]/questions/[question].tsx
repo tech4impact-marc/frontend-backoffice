@@ -118,7 +118,7 @@ const BackOfficeForm = ({
   const handleSubmit = () => {
     instance
       .put(
-        `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/types/${query.animal}/versions/${query.version}/questions/${query.question}`,
+        `/admin/reports/types/${query.animal}/versions/${query.version}/questions/${query.question}`,
         localQuestion
       )
       .then((response) => {
@@ -257,7 +257,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   try {
     const reportTypeResponse = await instance.get(
-      `${process.env.NEXT_PUBLIC_IP_ADDRESS}/reports/types/${selectedAnimal}`,
+      `/reports/types/${selectedAnimal}`,
       {
         headers: {
           Origin: `${process.env.NEXT_PUBLIC_FRONT_URL}`,
@@ -267,7 +267,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     const title = await reportTypeResponse.data.subject;
 
     const reportTypeVersionResponse = await instance.get(
-      `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/types/${selectedAnimal}/versions/${selectedVersion}`,
+      `/admin/reports/types/${selectedAnimal}/versions/${selectedVersion}`,
       {
         headers: {
           Origin: `${process.env.NEXT_PUBLIC_FRONT_URL}`,

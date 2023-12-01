@@ -19,6 +19,7 @@ import {
 } from "@/components/styledComponents/StyledContainer";
 import theme from "@/styles/theme";
 import { StyledButton } from "../layout/BackOfficeLayout";
+import instance from "@/utils/axios_interceptor";
 
 const NewReportOverlay = ({
   setOpenBackdrop,
@@ -74,15 +75,15 @@ const NewReportOverlay = ({
     };
     try {
       let reportTypeId: number;
-      const firstResponse = await axios.post(
-        `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/types`,
+      const firstResponse = await instance.post(
+        `/admin/reports/types`,
         initData
       );
       if (firstResponse.status === 200) {
         reportTypeId = firstResponse.data.id;
 
-        const secondResponse = await axios.post(
-          `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/types/${reportTypeId}/versions`,
+        const secondResponse = await instance.post(
+          `/admin/reports/types/${reportTypeId}/versions`,
           initVersionData
         );
 

@@ -109,14 +109,11 @@ BackOfficeForm.getLayout = (page: ReactElement) => (
 
 export const getServerSideProps: GetServerSideProps = async () => {
   try {
-    const animalResponse = await instance.get(
-      `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/types`,
-      {
-        headers: {
-          Origin: `${process.env.NEXT_PUBLIC_FRONT_URL}`,
-        },
-      }
-    );
+    const animalResponse = await instance.get(`/admin/reports/types`, {
+      headers: {
+        Origin: `${process.env.NEXT_PUBLIC_FRONT_URL}`,
+      },
+    });
     const animals: Animal[] = await animalResponse.data.contents;
 
     return { props: { animals } };

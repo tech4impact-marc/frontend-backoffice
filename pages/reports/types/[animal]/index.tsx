@@ -92,10 +92,7 @@ const BackOfficeForm = ({
 
   const handleSubmit = () => {
     instance
-      .patch(
-        `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/types/${selectedAnimal}`,
-        localResponseType
-      )
+      .patch(`/admin/reports/types/${selectedAnimal}`, localResponseType)
       .then((response) => {
         if (response.status == 200) {
           console.log(response);
@@ -154,10 +151,7 @@ const BackOfficeForm = ({
       ],
     };
     instance
-      .post(
-        `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/types/${selectedAnimal}/versions`,
-        initVersionData
-      )
+      .post(`/admin/reports/types/${selectedAnimal}/versions`, initVersionData)
       .then((response) => {
         console.log(response);
         window.location.reload();
@@ -300,13 +294,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   try {
     const reportTypeResponse = await instance.get(
-      `${process.env.NEXT_PUBLIC_IP_ADDRESS}/reports/types/${selectedAnimal}`, //보류 for kakao login
+      `/reports/types/${selectedAnimal}`, //보류 for kakao login
       setOrigin
     );
     const reportType: Animal = await reportTypeResponse.data;
 
     const reportTypeVersionResponse = await instance.get(
-      `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports/types/${selectedAnimal}/versions`,
+      `/admin/reports/types/${selectedAnimal}/versions`,
       setOrigin
     );
     const reportTypeVersion = await reportTypeVersionResponse.data;

@@ -56,12 +56,9 @@ export default function User() {
     }
 
     try {
-      const response = await instance.get(
-        `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/reports`,
-        {
-          params: params,
-        }
-      );
+      const response = await instance.get(`/admin/reports`, {
+        params: params,
+      });
 
       const dataResponse = response.data;
       const newRows = dataResponse.contents.map((report: any) => ({
@@ -110,7 +107,7 @@ export default function User() {
       };
 
       const response = await instance.patch(
-        `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/users/${userInfo.userId}`,
+        `/admin/users/${userInfo.userId}`,
         updatedUserInfo
       );
 
@@ -144,14 +141,11 @@ export default function User() {
     }
     const fetchData = async () => {
       try {
-        const response = await instance.get(
-          `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/users`,
-          {
-            params: {
-              nickname: user,
-            },
-          }
-        );
+        const response = await instance.get(`/admin/users`, {
+          params: {
+            nickname: user,
+          },
+        });
         if (response.data.totalNumberOfElements === 0) {
           alert("존재하지 않는 유저입니다.");
           router.back();
