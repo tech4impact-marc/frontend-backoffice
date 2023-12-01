@@ -26,7 +26,7 @@
 <img src="https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white">
 
 ## Demo
-- 웹 백오피스 : https://main--incomparable-gecko-2f889c.netlify.app/mypage
+- 웹 백오피스 : https://marc-backoffice.netlify.app/
 <img width="1444" alt="스크린샷 2023-12-01 오전 11 51 22" src="https://github.com/tech4impact-marc/backend/assets/77828537/717b74e2-d691-4240-85b9-13dfd9f7c59c">
 
 ## Build and Run
