@@ -29,6 +29,8 @@
 
 ```
 NEXT_PUBLIC_IP_ADDRESS=
+NEXT_PUBLIC_FRONT_URL=
+NEXT_PUBLIC_IMAGE_DOMAINS=
 ```
 
 환경 변수 설정 후 아래의 커맨드를 실행하면 앱을 실행할 수 있습니다.
