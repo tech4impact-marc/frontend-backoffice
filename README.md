@@ -17,7 +17,7 @@
 
 프론트엔드는 아래 레포지토리를 참고해주세요.
 
-[frontend](https://github.com/tech4impact-marc/frontend.git)
+[Frontend](https://github.com/tech4impact-marc/frontend.git)
 
 
 ## Stack
