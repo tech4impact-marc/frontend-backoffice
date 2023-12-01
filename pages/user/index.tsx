@@ -27,12 +27,9 @@ export default function AllUsers() {
 
     try {
       console.log("params", params);
-      const response = await instance.get(
-        `${process.env.NEXT_PUBLIC_IP_ADDRESS}/admin/users`,
-        {
-          params: params,
-        }
-      );
+      const response = await instance.get(`/admin/users`, {
+        params: params,
+      });
 
       const newRows = response.data.contents.map((user: any) => ({
         "유저 ID": user.id,
