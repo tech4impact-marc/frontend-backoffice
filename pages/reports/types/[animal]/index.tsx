@@ -69,6 +69,9 @@ const BackOfficeForm = () => {
   useEffect(() => {
     async function load() {
       const selectedAnimal = router.query.animal;
+      if (selectedAnimal === undefined) {
+        return;
+      }
 
       try {
         const reportTypeResponse = await instance.get(

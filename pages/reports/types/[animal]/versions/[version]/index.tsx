@@ -127,6 +127,9 @@ const ReportVersion = () => {
     async function load() {
       const selectedAnimal = router.query.animal;
       const selectedVersion = router.query.version;
+      if (selectedAnimal === undefined || selectedVersion === undefined) {
+        return;
+      }
 
       try {
         const reportTypeResponse = await instance.get(
