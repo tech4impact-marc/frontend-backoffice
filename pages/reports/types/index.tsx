@@ -67,11 +67,7 @@ const BackOfficeForm = () => {
   useEffect(() => {
     async function load() {
       const animalResponse = await instance
-        .get(`/admin/reports/types`, {
-          headers: {
-            Origin: `${process.env.NEXT_PUBLIC_FRONT_URL}`,
-          },
-        })
+        .get(`/admin/reports/types`)
         .then((response) => {
           if (response.status === 200) {
             setAnimals(response.data.contents);
